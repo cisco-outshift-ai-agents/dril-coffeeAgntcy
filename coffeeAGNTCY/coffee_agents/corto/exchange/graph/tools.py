@@ -33,6 +33,8 @@ class FlavorProfileTool(BaseTool):
     name: str = "get_flavor_profile"
     description: str = "Estimates the flavor profile of coffee beans based on a given prompt."
 
+    print("creating FlavorProfileTool")
+
     # private attribute to store client connection
     _client = PrivateAttr()
     
@@ -85,6 +87,8 @@ class FlavorProfileTool(BaseTool):
         Returns:
             str: The flavor profile estimation returned by the agent.
         """
+
+        print("send_message called with prompt:", prompt)
 
         # Ensure the client is connected, use async event loop to connect if not
         if not self._client:

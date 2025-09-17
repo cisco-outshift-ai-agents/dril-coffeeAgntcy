@@ -24,6 +24,7 @@ dependencies = [
     "uvicorn",
     "ioa-observe-sdk==1.0.18",
     "agntcy-app-sdk==0.2.2",
+    "langchain-nvidia-ai-endpoints>=0.3.18",
 ]
 
 [project.optional-dependencies]
