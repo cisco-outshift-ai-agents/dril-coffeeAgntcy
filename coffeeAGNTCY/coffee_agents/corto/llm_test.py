@@ -1,8 +1,8 @@
-import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
-
-os.environ["NVIDIA_API_KEY"] = "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"
 
 llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct")
 

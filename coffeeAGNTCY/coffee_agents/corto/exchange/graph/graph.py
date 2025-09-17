@@ -49,6 +49,7 @@ class ExchangeGraph:
             tools=[flavor_profile_tool],  # list of tools for the agent
             name="get_flavor_profile_via_a2a",
         )
+
         graph = create_supervisor(
             model=model,
             agents=[get_flavor_profile_a2a_agent],  # worker agents list

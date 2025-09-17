@@ -28,7 +28,7 @@ def get_nvidia_nim_llm():
   """
   from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
-  model = os.getenv("NVIDIA_NIM_MODEL", "meta/llama-3.1-70b-instruct")
+  model = os.getenv("NVIDIA_NIM_MODEL", "meta/llama-3.3-70b-instruct")
   api_key = os.getenv("NVIDIA_API_KEY")
   if api_key is None:
     logger.warning("NVIDIA_API_KEY environment variable is not set. Connecting without API key.")
