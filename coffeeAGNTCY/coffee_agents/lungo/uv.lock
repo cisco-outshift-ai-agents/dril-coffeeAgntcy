@@ -1382,6 +1382,20 @@ wheels = [
 ]
 
 [[package]]
+name = "langchain-nvidia-ai-endpoints"
+version = "0.3.18"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "filetype" },
+    { name = "langchain-core" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e9/8c/9a85fb802a8d683cc49d7bfa249deea3fd316047f7f9fe53de524427cefd/langchain_nvidia_ai_endpoints-0.3.18.tar.gz", hash = "sha256:798d219a3d5a9cffb87a1907d9d0fb707ec93da8f44adb74198dd4af445a532f", size = 41169, upload-time = "2025-09-10T00:00:59.842Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e0/59/55fcbcb9ef470fed95003c2ae6605a23337b52a96141a1a0b50ffc878a2d/langchain_nvidia_ai_endpoints-0.3.18-py3-none-any.whl", hash = "sha256:899b5f32d880543bd20e8d011cadcb98c804d9480938c4a8e3397c3215304c76", size = 44423, upload-time = "2025-09-10T00:00:58.442Z" },
+]
+
+[[package]]
 name = "langchain-openai"
 version = "0.3.23"
 source = { registry = "https://pypi.org/simple" }
@@ -1801,6 +1815,7 @@ dependencies = [
     { name = "ioa-observe-sdk" },
     { name = "langchain-anthropic" },
     { name = "langchain-google-genai" },
+    { name = "langchain-nvidia-ai-endpoints" },
     { name = "langchain-openai" },
     { name = "langgraph" },
     { name = "langgraph-supervisor" },
@@ -1840,6 +1855,7 @@ requires-dist = [
     { name = "ioa-observe-sdk", specifier = "==1.0.18" },
     { name = "langchain-anthropic", specifier = ">=0.3.13" },
     { name = "langchain-google-genai", specifier = ">=2.1.4" },
+    { name = "langchain-nvidia-ai-endpoints", specifier = ">=0.3.18" },
     { name = "langchain-openai", specifier = ">=0.3.16" },
     { name = "langchain-openai", marker = "extra == 'dev'", specifier = ">=0.3.14,<0.4" },
     { name = "langgraph", specifier = ">=0.4.1" },

@@ -74,6 +74,14 @@ Before you begin, ensure the following tools are installed:
 
    Then update `.env` with your LLM provider, credentials and OTEL endpoint. For example:
 
+  *Nvidia Nim:*
+
+   ```env
+    LLM_PROVIDER=nvidia-nim
+    NVIDIA_API_KEY="your_nvidia_api_key"
+    NVIDIA_NIM_ENDPOINT="hosted_model_endpoint"
+   ```
+
    *OpenAI:*
    
    ```env

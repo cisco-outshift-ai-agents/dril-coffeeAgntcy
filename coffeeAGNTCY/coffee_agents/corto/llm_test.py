@@ -4,7 +4,7 @@ load_dotenv()
 
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
-llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct")
+llm = ChatNVIDIA(model="openai/gpt-oss-20b")
 
 response = llm.predict("Can you tell me a joke?")
 print(response)

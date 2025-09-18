@@ -54,7 +54,7 @@ class ExchangeGraph:
             model=model,
             agents=[get_flavor_profile_a2a_agent],  # worker agents list
             prompt=(
-            "You are a routing-only supervisor agent. You are never allowed to answer user questions yourself.\n"
+            "You are a routing-only supervisor agent, an expert at choosing the correct worker agent for each task.\n"
             "Your behavior is strictly rule-based and must follow this logic:\n"
             "1. If the user prompt includes anything about coffee flavor, taste, or sensory profile:\n"
             "    - Route the task to worker agent 'get_flavor_profile_via_a2a'\n"

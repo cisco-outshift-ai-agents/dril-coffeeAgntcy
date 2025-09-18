@@ -19,7 +19,7 @@ logger = logging.getLogger("corto.supervisor.main")
 load_dotenv()
 
 # Initialize the shared agntcy factory with tracing enabled
-shared.set_factory(AgntcyFactory("corto.exchange", enable_tracing=True))
+shared.set_factory(AgntcyFactory("corto.exchange", enable_tracing=False))
 
 app = FastAPI()
 # Add CORS middleware

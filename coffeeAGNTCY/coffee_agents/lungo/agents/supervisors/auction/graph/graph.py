@@ -85,7 +85,7 @@ class ExchangeGraph:
         workflow.add_node(NodeStates.INVENTORY_TOOLS, ToolNode([get_farm_yield_inventory, get_all_farms_yield_inventory]))
         workflow.add_node(NodeStates.ORDERS, self._orders_node)
         workflow.add_node(NodeStates.ORDERS_TOOLS, ToolNode([create_order, get_order_details]))
-        workflow.add_node(NodeStates.REFLECTION, self._reflection_node)
+        #workflow.add_node(NodeStates.REFLECTION, self._reflection_node)
         workflow.add_node(NodeStates.GENERAL_INFO, self._general_response_node)
 
         # --- 2. Define the Agentic Workflow ---
@@ -103,10 +103,17 @@ class ExchangeGraph:
             },
         )
 
-        workflow.add_conditional_edges(NodeStates.INVENTORY, tools_or_next(NodeStates.INVENTORY_TOOLS, NodeStates.REFLECTION))
+        '''workflow.add_conditional_edges(NodeStates.INVENTORY, tools_or_next(NodeStates.INVENTORY_TOOLS, NodeStates.REFLECTION))
         workflow.add_edge(NodeStates.INVENTORY_TOOLS, NodeStates.INVENTORY)
 
         workflow.add_conditional_edges(NodeStates.ORDERS, tools_or_next(NodeStates.ORDERS_TOOLS, NodeStates.REFLECTION))
+        workflow.add_edge(NodeStates.ORDERS_TOOLS, NodeStates.ORDERS)
+
+        workflow.add_edge(NodeStates.GENERAL_INFO, END)'''
+        workflow.add_conditional_edges(NodeStates.INVENTORY, tools_or_next(NodeStates.INVENTORY_TOOLS, END))
+        workflow.add_edge(NodeStates.INVENTORY_TOOLS, NodeStates.INVENTORY)
+
+        workflow.add_conditional_edges(NodeStates.ORDERS, tools_or_next(NodeStates.ORDERS_TOOLS, END))
         workflow.add_edge(NodeStates.ORDERS_TOOLS, NodeStates.ORDERS)
 
         workflow.add_edge(NodeStates.GENERAL_INFO, END)

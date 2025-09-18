@@ -26,6 +26,7 @@ dependencies = [
     "ioa-observe-sdk==1.0.18",
     "identity-service-sdk==0.0.3",
     "agntcy-app-sdk==0.2.2",
+    "langchain-nvidia-ai-endpoints>=0.3.18",
 ]
 
 [project.optional-dependencies]
