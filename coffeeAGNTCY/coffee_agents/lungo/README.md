@@ -79,7 +79,7 @@ Before you begin, ensure the following tools are installed:
    ```env
     LLM_PROVIDER=nvidia-nim
     NVIDIA_API_KEY="your_nvidia_api_key"
-    NVIDIA_NIM_ENDPOINT="hosted_model_endpoint"
+    NVIDIA_NIM_MODEL_ENDPOINT="hosted_model_endpoint"
    ```
 
    *OpenAI:*
