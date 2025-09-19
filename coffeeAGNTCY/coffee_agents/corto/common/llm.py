@@ -29,10 +29,22 @@ def get_nvidia_nim_llm():
   from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
   model = os.getenv("NVIDIA_NIM_MODEL", "openai/gpt-oss-20b")
+  model_endpoint = os.getenv("NVIDIA_NIM_MODEL_ENDPOINT", None)
   api_key = os.getenv("NVIDIA_API_KEY")
   if api_key is None:
     logger.warning("NVIDIA_API_KEY environment variable is not set. Connecting without API key.")
+
+  if model_endpoint:
+    llm = ChatNVIDIA(
+      model=model,
+      base_url=model_endpoint,
+      api_key=api_key,
+    )
+    logger.info(f"Using NVIDIA LLM model: {model} at custom endpoint: {model_endpoint}")
+    return llm
   
-  llm = ChatNVIDIA(model=model)
+  llm = ChatNVIDIA(
+    model=model,
+  )
   logger.info(f"Using NVIDIA LLM model: {model}")
   return llm
