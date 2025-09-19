@@ -4,9 +4,9 @@
  **/
 
 import React, { useState, useEffect } from "react"
-import { v4 as uuid } from "uuid"
 import { LOCAL_STORAGE_KEY } from "@/components/Chat/Messages"
 import { logger } from "@/utils/logger"
+import { useChatAreaMeasurement } from "@/hooks/useChatAreaMeasurement"
 
 import Navigation from "@/components/Navigation/Navigation"
 import MainArea from "@/components/MainArea/MainArea"
@@ -35,21 +35,22 @@ const App: React.FC = () => {
   const [isAgentLoading, setIsAgentLoading] = useState<boolean>(false)
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY)
-    return saved
-      ? JSON.parse(saved)
-      : [
-          {
-            role: "assistant",
-            content: "Hi! Select a pattern to get started.",
-            id: uuid(),
-            animate: false,
-          },
-        ]
+    return saved ? JSON.parse(saved) : []
   })
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(messages))
   }, [messages])
+
+  const {
+    height: chatHeight,
+    isExpanded,
+    chatRef,
+  } = useChatAreaMeasurement({
+    debounceMs: 100,
+  })
+
+  const chatHeightValue = currentUserMessage || agentResponse ? chatHeight : 76
 
   const handleCoffeeGraderSelect = (query: string) => {
     handleDropdownSelect(query)
@@ -86,9 +87,18 @@ const App: React.FC = () => {
       const response = await sendMessage(query)
       handleApiResponse(response, false)
     } catch (error) {
-      logger.apiError("/api/ask", error)
+      logger.apiError("/agent/prompt", error)
       handleApiResponse("Sorry, I encountered an error.", true)
     }
+  }
+
+  const handleClearConversation = () => {
+    setMessages([])
+    setCurrentUserMessage("")
+    setAgentResponse("")
+    setIsAgentLoading(false)
+    setButtonClicked(false)
+    setAiReplied(false)
   }
 
   return (
@@ -110,10 +120,12 @@ const App: React.FC = () => {
                 setButtonClicked={setButtonClicked}
                 aiReplied={aiReplied}
                 setAiReplied={setAiReplied}
+                chatHeight={chatHeightValue}
+                isExpanded={isExpanded}
               />
             </div>
 
-            <div className="flex min-h-[76px] w-full flex-none flex-col items-center justify-center gap-0 bg-overlay-background p-0">
+            <div className="flex min-h-[76px] w-full flex-none flex-col items-center justify-center gap-0 bg-overlay-background p-0 md:min-h-[96px]">
               <ChatArea
                 setMessages={setMessages}
                 setButtonClicked={setButtonClicked}
@@ -127,9 +139,11 @@ const App: React.FC = () => {
                 onDropdownSelect={handleDropdownSelect}
                 onUserInput={handleUserInput}
                 onApiResponse={handleApiResponse}
+                onClearConversation={handleClearConversation}
                 currentUserMessage={currentUserMessage}
                 agentResponse={agentResponse}
                 isAgentLoading={isAgentLoading}
+                chatRef={chatRef}
               />
             </div>
           </div>

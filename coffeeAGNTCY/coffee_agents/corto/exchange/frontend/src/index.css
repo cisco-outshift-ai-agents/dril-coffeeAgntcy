@@ -58,11 +58,15 @@
     --sidebar-border: #00142b;
     --sidebar-text: #fbfcfe;
 
+    --custom-node-background: #00142b;
+    --custom-node-border: transparent;
+
     --github-icon: url("@/assets/Github.png");
     --agent-directory-icon: url("@/assets/Agent_directory.png");
 
     --shadow-default: rgba(0, 0, 0, 0.6);
     --overlay-background: #2e3e57;
+    --control-border-weak: #23282e33;
 
     --modal-background: #1a2432;
     --modal-border: #2e3e57;
@@ -132,7 +136,7 @@
     --chat-dropdown-background: #dee6f9;
     --chat-dropdown-icon: #3c4551;
 
-    --action-background: #fbfcfe;
+    --action-background: #187adc;
     --action-background-hover: #0d274d;
 
     --sidebar-background: #fbfcfe;
@@ -140,11 +144,15 @@
     --sidebar-border: #fbfcfe;
     --sidebar-text: #00142b;
 
+    --custom-node-background: #fbfcfe;
+    --custom-node-border: #187adc;
+
     --github-icon: url("@/assets/Github_lightmode.png");
     --agent-directory-icon: url("@/assets/Agent_Icon_light.png");
 
     --shadow-default: 0 4px 8px rgba(0, 0, 0, 0.1);
-    --overlay-background: #f5f8fd;
+    --overlay-background: #eff3fc;
+    --control-border-weak: #e8eefb;
 
     --modal-background: #ffffff;
     --modal-border: #dbe0e5;
@@ -185,6 +193,37 @@
 
   body[data-theme="light"] .dark-icon {
     filter: brightness(0) saturate(0) opacity(0.6);
+  }
+
+  .chat-header-icon {
+    filter: brightness(0) saturate(100%) invert(85%) sepia(7%) saturate(398%)
+      hue-rotate(186deg) brightness(97%) contrast(92%);
+  }
+
+  body[data-theme="light"] .chat-header-icon {
+    filter: brightness(0) saturate(100%) invert(22%) sepia(8%) saturate(1157%)
+      hue-rotate(192deg) brightness(95%) contrast(88%);
+  }
+
+  .chat-header-text {
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.25px;
+    color: #fbfcfe;
+  }
+
+  body[data-theme="light"] .chat-header-text {
+    color: #3c4551;
+  }
+
+  .chat-header-trash-icon {
+    color: #e8e9ea;
+  }
+
+  body[data-theme="light"] .chat-header-trash-icon {
+    color: #3c4551;
   }
 
   .dark {

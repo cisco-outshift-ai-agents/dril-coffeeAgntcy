@@ -51,6 +51,7 @@ export default {
 
         "shadow-default": "var(--shadow-default)",
         "overlay-background": "var(--overlay-background)",
+        "control-border-weak": "var(--control-border-weak)",
 
         "modal-background": "var(--modal-background)",
         "modal-border": "var(--modal-border)",

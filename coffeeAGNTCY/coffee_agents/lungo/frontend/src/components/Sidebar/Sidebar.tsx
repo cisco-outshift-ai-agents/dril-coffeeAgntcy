@@ -45,17 +45,17 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="flex h-full w-[320px] flex-col items-start gap-5 border-r border-sidebar-border bg-sidebar-background px-4 py-0 font-inter">
-      <div className="mt-5 flex w-[288px] flex-col items-start gap-0 p-0">
-        <div className="flex w-[288px] flex-col items-start p-0">
-          <div className="flex h-9 w-[288px] items-start gap-2 bg-sidebar-background p-2 transition-colors hover:bg-sidebar-item-selected">
+    <div className="flex h-full w-64 flex-none flex-col gap-5 border-r border-sidebar-border bg-sidebar-background font-inter lg:w-[320px]">
+      <div className="flex h-full flex-1 flex-col gap-5 p-4">
+        <div className="flex flex-col">
+          <div className="flex min-h-[36px] w-full items-center gap-2 rounded p-2">
             <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
               Conversation: Coffee Buying
             </span>
           </div>
 
-          <div className="flex w-[288px] flex-col items-start gap-0 p-0">
-            <div className="flex h-9 w-[288px] items-start gap-2 bg-sidebar-background px-5 py-2 transition-colors hover:bg-sidebar-item-selected">
+          <div className="flex flex-col">
+            <div className="flex min-h-[36px] w-full items-center gap-2 rounded p-2">
               <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
                 Agentic Patterns
               </span>

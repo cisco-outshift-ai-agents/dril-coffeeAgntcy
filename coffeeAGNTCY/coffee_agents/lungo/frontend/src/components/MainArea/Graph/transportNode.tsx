@@ -45,8 +45,11 @@ const TransportNode: React.FC<TransportNodeProps> = ({ data }) => {
           className="no-underline"
         >
           <div
-            className="absolute -right-4 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg border border-solid bg-action-background p-1 opacity-100 shadow-sm transition-opacity duration-200 ease-in-out"
-            style={{ borderColor: "var(--node-icon-border)" }}
+            className="absolute -right-4 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg border border-solid p-1 opacity-100 shadow-sm transition-opacity duration-200 ease-in-out"
+            style={{
+              backgroundColor: "var(--custom-node-background)",
+              borderColor: "var(--custom-node-border)",
+            }}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = "0.8"
             }}
