@@ -48,14 +48,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     <div className="flex h-full w-64 flex-none flex-col gap-5 border-r border-sidebar-border bg-sidebar-background font-inter lg:w-[320px]">
       <div className="flex h-full flex-1 flex-col gap-5 p-4">
         <div className="flex flex-col">
-          <div className="flex min-h-[36px] w-full items-center gap-2 rounded p-2">
+          <div className="flex min-h-[36px] w-full items-center gap-2 rounded py-2 pl-2 pr-5">
             <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
               Conversation: Coffee Buying
             </span>
           </div>
 
           <div className="flex flex-col">
-            <div className="flex min-h-[36px] w-full items-center gap-2 rounded p-2">
+            <div className="flex min-h-[36px] w-full items-center gap-2 rounded py-2 pl-5 pr-5">
               <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
                 Agentic Patterns
               </span>
@@ -71,6 +71,36 @@ const Sidebar: React.FC<SidebarProps> = ({
                   title={`A2A ${transport}`}
                   isSelected={selectedPattern === PATTERNS.PUBLISH_SUBSCRIBE}
                   onClick={() => onPatternChange(PATTERNS.PUBLISH_SUBSCRIBE)}
+                />
+              </SidebarDropdown>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <div className="flex min-h-[36px] w-full items-center gap-2 rounded py-2 pl-2 pr-5">
+            <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
+              Conversation: Order Fulfilment
+            </span>
+          </div>
+
+          <div className="flex flex-col">
+            <div className="flex min-h-[36px] w-full items-center gap-2 rounded py-2 pl-5 pr-5">
+              <span className="flex-1 font-inter text-sm font-normal leading-5 tracking-[0.25px] text-sidebar-text">
+                Agentic Patterns
+              </span>
+            </div>
+
+            <div>
+              <SidebarDropdown
+                title="Secure Group Communication"
+                isExpanded={isTransportExpanded}
+                onToggle={handleTransportToggle}
+              >
+                <SidebarItem
+                  title="SLIM"
+                  isSelected={selectedPattern === PATTERNS.GROUP_COMMUNICATION}
+                  onClick={() => onPatternChange(PATTERNS.GROUP_COMMUNICATION)}
                 />
               </SidebarDropdown>
             </div>

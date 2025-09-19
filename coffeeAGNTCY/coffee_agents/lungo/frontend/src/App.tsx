@@ -18,6 +18,7 @@ import { Message } from "./types/message"
 export const PATTERNS = {
   SLIM_A2A: "slim_a2a",
   PUBLISH_SUBSCRIBE: "publish_subscribe",
+  GROUP_COMMUNICATION: "group_communication",
 } as const
 
 export type PatternType = (typeof PATTERNS)[keyof typeof PATTERNS]
