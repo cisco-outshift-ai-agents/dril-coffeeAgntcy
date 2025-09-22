@@ -4,6 +4,7 @@
  **/
 
 import { TiWeatherCloudy } from "react-icons/ti"
+import { Truck, Calculator } from "lucide-react"
 import { Node, Edge } from "@xyflow/react"
 import supervisorIcon from "@/assets/supervisor.png"
 import farmAgentIcon from "@/assets/Grader-Agent.png"
@@ -293,11 +294,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
       type: "customNode",
       data: {
         icon: (
-          <img
-            src={farmAgentIcon}
-            alt="Logistics Agent Icon"
-            className="dark-icon h-4 w-4 object-contain opacity-100"
-          />
+          <Truck className="dark-icon h-4 w-4 object-contain opacity-100" />
         ),
         label1: "Shipper",
         label2: "Shipper Agent",
@@ -315,11 +312,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
       type: "customNode",
       data: {
         icon: (
-          <img
-            src={farmAgentIcon}
-            alt="Logistics Agent Icon"
-            className="dark-icon h-4 w-4 object-contain opacity-100"
-          />
+          <Calculator className="dark-icon h-4 w-4 object-contain opacity-100" />
         ),
         label1: "Accountant",
         label2: "Accountant Agent",
@@ -327,8 +320,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
         agentName: "Accountant Logistics",
         githubLink:
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/accountant/agent.py#L30",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/accountant-logistics-agent",
+        agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
       position: { x: 550, y: 350 },
     },
@@ -356,20 +348,36 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         handles: "source",
         githubLink:
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/supervisors/auction/graph/graph.py#L116",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/34f05b1e-3bd3-4a21-b8c5-e9f191942ed0",
+        agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
       position: { x: 527.1332569384248, y: 76.4805787605829 },
+    },
+    {
+      id: "logistics-group",
+      type: "group",
+      data: {
+        label: "Logistics Group",
+      },
+      position: { x: 100, y: 375 },
+      style: {
+        width: 800,
+        height: 280,
+        backgroundColor: "var(--group-background)",
+        border: "none",
+        borderRadius: "8px",
+      },
     },
     {
       id: "2",
       type: "transportNode",
       data: {
         label: "Transport: SLIM",
+        compact: true,
         githubLink:
           "https://github.com/agntcy/app-sdk/blob/main/src/agntcy_app_sdk/transports/slim/transport.py#L29",
       },
-      position: { x: 229.02370449534635, y: 284.688426426175 },
+      position: { x: 235, y: -25 },
+      parentId: "logistics-group",
     },
     {
       id: "3",
@@ -387,22 +395,19 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         handles: "target",
         farmName: "Tatooine Farm",
         githubLink:
-          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/farms/tatooine/agent.py#L30",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/tatooine-farm-agent",
+          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/farm/agent.py#L30",
+        agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
-      position: { x: 232.0903941835277, y: 503.93174725714437 },
+      position: { x: 50, y: 180 },
+      parentId: "logistics-group",
+      extent: "parent",
     },
     {
       id: "4",
       type: "customNode",
       data: {
         icon: (
-          <img
-            src={farmAgentIcon}
-            alt="Logistics Agent Icon"
-            className="dark-icon h-4 w-4 object-contain opacity-100"
-          />
+          <Truck className="dark-icon h-4 w-4 object-contain opacity-100" />
         ),
         label1: "Shipper",
         label2: "Shipper Agent",
@@ -413,18 +418,16 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/shipper-logistics-agent",
       },
-      position: { x: 521.266082170288, y: 505.38817113883306 },
+      position: { x: 300, y: 180 },
+      parentId: "logistics-group",
+      extent: "parent",
     },
     {
       id: "5",
       type: "customNode",
       data: {
         icon: (
-          <img
-            src={farmAgentIcon}
-            alt="Logistics Agent Icon"
-            className="dark-icon h-4 w-4 object-contain opacity-100"
-          />
+          <Calculator className="dark-icon h-4 w-4 object-contain opacity-100" />
         ),
         label1: "Accountant",
         label2: "Accountant Agent",
@@ -435,7 +438,9 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/accountant-logistics-agent",
       },
-      position: { x: 832.9824511707582, y: 505.08339631990395 },
+      position: { x: 550, y: 180 },
+      parentId: "logistics-group",
+      extent: "parent",
     },
   ],
   edges: [
@@ -448,40 +453,27 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
       type: "custom",
     },
     {
-      id: "2-3",
+      id: "2-branches",
       source: "2",
       target: "3",
-      sourceHandle: "bottom_left",
-      data: { label: "A2A" },
-      type: "custom",
-    },
-    {
-      id: "2-4",
-      source: "2",
-      target: "4",
       sourceHandle: "bottom_center",
-      data: { label: "A2A" },
-      type: "custom",
-    },
-    {
-      id: "2-5",
-      source: "2",
-      target: "5",
-      sourceHandle: "bottom_right",
-      data: { label: "A2A" },
-      type: "custom",
+      data: {
+        label: "A2A",
+        branches: ["3", "4", "5"],
+      },
+      type: "branching",
     },
   ],
   animationSequence: [
     { ids: ["1"] },
     { ids: ["1-2"] },
     { ids: ["2"] },
-    { ids: ["2-3"] },
+    { ids: ["2-branches"] },
+    { ids: ["3", "4", "5"] },
     { ids: ["3"] },
-    { ids: ["2-4"] },
     { ids: ["4"] },
-    { ids: ["2-5"] },
     { ids: ["5"] },
+    { ids: ["4"] },
   ],
 }
 

@@ -16,6 +16,7 @@ import "./ReactFlow.css"
 import { PatternType } from "@/App"
 import TransportNode from "./Graph/transportNode"
 import CustomEdge from "./Graph/CustomEdge"
+import BranchingEdge from "./Graph/BranchingEdge"
 import CustomNode from "./Graph/CustomNode"
 import {
   getGraphConfig,
@@ -33,6 +34,7 @@ const nodeTypes = {
 
 const edgeTypes = {
   custom: CustomEdge,
+  branching: BranchingEdge,
 }
 
 interface AnimationStep {
@@ -261,6 +263,8 @@ const MainArea: React.FC<MainAreaProps> = ({
     setEdges,
   ])
 
+  const onNodeDrag = useCallback(() => {}, [])
+
   return (
     <div className="bg-primary-bg order-1 flex h-full w-full flex-none flex-grow flex-col items-start self-stretch p-0">
       <ReactFlow
@@ -270,6 +274,7 @@ const MainArea: React.FC<MainAreaProps> = ({
         edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeDrag={onNodeDrag}
         proOptions={proOptions}
         defaultViewport={{ x: 0, y: 0, zoom: 0.75 }}
         minZoom={0.15}

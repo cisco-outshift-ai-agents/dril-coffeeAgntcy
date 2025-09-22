@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onToggle={handleGroupCommunicationToggle}
               >
                 <SidebarItem
-                  title="SLIM"
+                  title="A2A SLIM"
                   isSelected={selectedPattern === PATTERNS.GROUP_COMMUNICATION}
                   onClick={() => onPatternChange(PATTERNS.GROUP_COMMUNICATION)}
                 />

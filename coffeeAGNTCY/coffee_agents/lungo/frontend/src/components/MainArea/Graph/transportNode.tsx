@@ -13,6 +13,7 @@ interface TransportNodeData {
   label: string
   active?: boolean
   githubLink?: string
+  compact?: boolean
 }
 
 interface TransportNodeProps {
@@ -29,9 +30,11 @@ const TransportNode: React.FC<TransportNodeProps> = ({ data }) => {
     ? "bg-node-background-active outline outline-2 outline-accent-border shadow-[var(--shadow-default)_0px_6px_8px]"
     : "bg-node-background"
 
+  const widthClass = data.compact ? "w-[280px]" : "w-[1200px]"
+
   return (
     <div
-      className={` ${activeClasses} relative flex h-[52px] w-[1200px] items-center justify-center rounded-lg p-4 text-center text-gray-50 hover:bg-node-background-hover hover:shadow-[var(--shadow-default)_0px_6px_8px] hover:outline hover:outline-2 hover:outline-accent-border`}
+      className={` ${activeClasses} relative flex h-[52px] ${widthClass} items-center justify-center rounded-lg p-4 text-center text-gray-50 hover:bg-node-background-hover hover:shadow-[var(--shadow-default)_0px_6px_8px] hover:outline hover:outline-2 hover:outline-accent-border`}
     >
       <div className="flex h-5 w-[94px] items-center justify-center whitespace-nowrap font-inter text-sm font-normal leading-5 tracking-normal text-node-text-primary opacity-100">
         {data.label}
