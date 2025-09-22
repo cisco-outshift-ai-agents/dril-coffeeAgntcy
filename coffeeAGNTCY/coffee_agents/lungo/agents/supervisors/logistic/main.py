@@ -16,11 +16,8 @@ from ioa_observe.sdk.tracing import session_start
 from config.config import DEFAULT_MESSAGE_TRANSPORT
 
 setup_logging()
-<<<<<<< HEAD
-logger = logging.getLogger("lungo.supervisor.main")
-=======
 logger = logging.getLogger("lungo.logistic.supervisor.main")
->>>>>>> main
+
 
 load_dotenv()
 
@@ -85,8 +82,6 @@ async def get_config():
 
 # Run the FastAPI server using uvicorn
 if __name__ == "__main__":
-<<<<<<< HEAD
   uvicorn.run("main:app", host="0.0.0.0", port=9090, reload=True)
-=======
-  uvicorn.run("main:app", host="0.0.0.0", port=9090, reload=True)
->>>>>>> main
+
+

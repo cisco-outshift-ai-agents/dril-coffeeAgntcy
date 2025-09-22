@@ -3,16 +3,6 @@
 
 import logging
 import uuid
-<<<<<<< HEAD
-from pydantic import BaseModel, Field
-
-from langchain_core.prompts import PromptTemplate
-from langchain_core.messages import AIMessage, SystemMessage
-
-from langgraph.graph.state import CompiledStateGraph
-from langgraph.graph import MessagesState
-from langgraph.graph import StateGraph, END
-=======
 
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import AIMessage
@@ -20,29 +10,12 @@ from langchain_core.messages import AIMessage
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph import MessagesState
 from langgraph.graph import StateGraph
->>>>>>> main
 from langgraph.prebuilt import ToolNode
 from ioa_observe.sdk.decorators import agent, tool, graph
 
 from common.llm import get_llm
 from agents.supervisors.logistic.graph.tools import (
     create_order,
-<<<<<<< HEAD
-    tools_or_next
-)
-
-logger = logging.getLogger("lungo.supervisor.graph")
-
-class NodeStates:
-    SUPERVISOR = "logistic_supervisor"
-
-    ORDERS = "orders_broker"
-    ORDERS_TOOLS = "orders_tools"
-
-    REFLECTION = "reflection"
-    GENERAL_INFO = "general"
-
-=======
     next_tools_or_end
 )
 
@@ -52,7 +25,6 @@ class NodeStates:
     ORDERS = "orders_broker"
     ORDERS_TOOLS = "orders_tools"
 
->>>>>>> main
 class GraphState(MessagesState):
     """
     Represents the state of our graph, passed between nodes.
@@ -87,116 +59,11 @@ class LogisticGraph:
         CompiledGraph: A fully compiled LangGraph instance ready for execution.
         """
 
-<<<<<<< HEAD
-        self.supervisor_llm = None
-        self.reflection_llm = None
-=======
->>>>>>> main
         self.orders_llm = None
 
         workflow = StateGraph(GraphState)
 
         # --- 1. Define Node States ---
-<<<<<<< HEAD
-
-        workflow.add_node(NodeStates.SUPERVISOR, self._supervisor_node)
-        workflow.add_node(NodeStates.ORDERS, self._orders_node)
-        workflow.add_node(NodeStates.ORDERS_TOOLS, ToolNode([create_order]))
-        workflow.add_node(NodeStates.REFLECTION, self._reflection_node)
-        workflow.add_node(NodeStates.GENERAL_INFO, self._general_response_node)
-
-        # --- 2. Define the Agentic Workflow ---
-
-        workflow.set_entry_point(NodeStates.SUPERVISOR)
-
-        # Add conditional edges from the supervisor
-        workflow.add_conditional_edges(
-            NodeStates.SUPERVISOR,
-            lambda state: state["next_node"],
-            {
-                NodeStates.ORDERS: NodeStates.ORDERS,
-                NodeStates.GENERAL_INFO: NodeStates.GENERAL_INFO,
-            },
-        )
-
-        workflow.add_conditional_edges(NodeStates.ORDERS, tools_or_next(NodeStates.ORDERS_TOOLS, NodeStates.REFLECTION))
-        workflow.add_edge(NodeStates.ORDERS_TOOLS, NodeStates.ORDERS)
-
-        workflow.add_edge(NodeStates.GENERAL_INFO, END)
- 
-        return workflow.compile()
-    
-    async def _supervisor_node(self, state: GraphState) -> dict:
-        """
-        Determines the intent of the user's message and routes to the appropriate node.
-        """
-        if not self.supervisor_llm:
-            self.supervisor_llm = get_llm()
-
-        user_message = state["messages"]
-
-        prompt = PromptTemplate(
-            template="""You are a global coffee exchange agent connecting users to coffee farms in Brazil, Colombia, and Vietnam. 
-            Based on the user's message, determine if it's related to 'inventory' or 'orders'.
-            Respond with 'inventory' if the message is about checking yield, stock, product availability, regions of origin, or specific coffee item details.
-            Respond with 'orders' if the message is about checking order status, placing an order, or modifying an existing order.
-            
-            User message: {user_message}
-            """,
-            input_variables=["user_message"]
-        )
-
-        chain = prompt | self.supervisor_llm
-        response = chain.invoke({"user_message": user_message})
-        intent = response.content.strip().lower()
-
-        logger.info(f"Supervisor decided: {intent}")
-
-        if "inventory" in intent:
-            return {"next_node": NodeStates.INVENTORY, "messages": user_message}
-        elif "orders" in intent:
-            return {"next_node": NodeStates.ORDERS, "messages": user_message}
-        else:
-            return {"next_node": NodeStates.GENERAL_INFO, "messages": user_message}
-        
-    async def _reflection_node(self, state: GraphState) -> dict:
-        """
-        Reflect on the conversation to determine if the user's query has been satisfied 
-        or if further action is needed.
-        """
-        if not self.reflection_llm:
-            class ShouldContinue(BaseModel):
-                should_continue: bool = Field(description="Whether to continue processing the request.")
-                reason: str = Field(description="Reason for decision whether to continue the request.")
-            
-            # create a structured output LLM for reflection
-            self.reflection_llm = get_llm().with_structured_output(ShouldContinue, strict=True)
-
-        sys_msg_reflection = SystemMessage(
-            content="""Decide whether the user query has been satisifed or if we need to continue.
-                Do not continue if the last message is a question or requires user input.
-                """,
-                pretty_repr=True,
-            )
-        
-        response = await self.reflection_llm.ainvoke(
-          [sys_msg_reflection] + state["messages"]
-        )
-        logging.info(f"Reflection agent response: {response}")
-
-        is_duplicate_message = (
-          len(state["messages"]) > 2 and state["messages"][-1].content == state["messages"][-3].content
-        )
-        
-        should_continue = response.should_continue and not is_duplicate_message
-        next_node = NodeStates.SUPERVISOR if should_continue else END
-        logging.info(f"Next node: {next_node}")
-
-        return {
-          "next_node": next_node,
-          "messages": [SystemMessage(content=response.reason)],
-        }
-=======
         workflow.add_node(NodeStates.ORDERS, self._orders_node)
         workflow.add_node(NodeStates.ORDERS_TOOLS, ToolNode([create_order]))
 
@@ -209,7 +76,6 @@ class LogisticGraph:
 
         return workflow.compile()
 
->>>>>>> main
 
     async def _orders_node(self, state: GraphState) -> dict:
         if not self.orders_llm:
@@ -253,15 +119,6 @@ class LogisticGraph:
         return {
             "messages": [llm_response]
         }
-<<<<<<< HEAD
-    
-    def _general_response_node(self, state: GraphState) -> dict:
-        return {
-            "next_node": END,
-            "messages": [AIMessage(content="I'm not sure how to handle that. Could you please clarify?")],
-        }
-=======
->>>>>>> main
 
     async def serve(self, prompt: str):
         """
@@ -300,8 +157,4 @@ class LogisticGraph:
             raise ValueError(str(ve))
         except Exception as e:
             logger.error(f"Error in serve method: {e}")
-<<<<<<< HEAD
             raise Exception(str(e))
-=======
-            raise Exception(str(e))
->>>>>>> main
