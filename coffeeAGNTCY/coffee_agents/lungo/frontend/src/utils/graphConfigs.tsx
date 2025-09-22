@@ -264,7 +264,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/34f05b1e-3bd3-4a21-b8c5-e9f191942ed0",
       },
-      position: { x: 200, y: 150 },
+      position: { x: 250, y: 180 },
     },
     {
       id: "3",
@@ -286,7 +286,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/tatooine-farm-agent",
       },
-      position: { x: 650, y: 150 },
+      position: { x: 550, y: 180 },
     },
     {
       id: "4",
@@ -308,7 +308,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/shipper-logistics-agent",
       },
-      position: { x: 200, y: 400 },
+      position: { x: 250, y: 350 },
     },
     {
       id: "5",
@@ -330,7 +330,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/accountant-logistics-agent",
       },
-      position: { x: 650, y: 400 },
+      position: { x: 550, y: 350 },
     },
   ],
   edges: [],
