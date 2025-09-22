@@ -3,6 +3,7 @@ services:
     build:
       context: ../../..
       dockerfile: coffeeAGNTCY/coffee_agents/lungo/docker/Dockerfile.logistic-shipper
+<<<<<<< HEAD
     #image: ghcr.io/agntcy/coffee-agntcy/logistic-shipper:latest
     platform: linux/amd64
     environment:
@@ -15,15 +16,26 @@ services:
 #      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-}
 #      - LLM_PROVIDER=${LLM_PROVIDER}
       - DEFAULT_MESSAGE_TRANSPORT=SLIM
+=======
+    image: ghcr.io/agntcy/coffee-agntcy/logistic-shipper:latest
+    platform: linux/amd64
+    environment:
+      - DEFAULT_MESSAGE_TRANSPORT=SLIM # Do not change. SLIM is required for group conversation.
+>>>>>>> main
       - TRANSPORT_SERVER_ENDPOINT=http://logistic-slim:56400
       - OTLP_HTTP_ENDPOINT=${OTLP_HTTP_ENDPOINT:-http://otel-collector:4318}
       - ENABLE_HTTP=true
     ports:
       - "9091:9091"
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
   logistic-accountant:
     build:
       context: ../../..
       dockerfile: coffeeAGNTCY/coffee_agents/lungo/docker/Dockerfile.logistic-accountant
+<<<<<<< HEAD
 #    image: ghcr.io/agntcy/coffee-agntcy/logistic-accountant:latest
     platform: linux/amd64
     environment:
@@ -36,6 +48,12 @@ services:
 #      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-}
 #      - LLM_PROVIDER=${LLM_PROVIDER}
       - DEFAULT_MESSAGE_TRANSPORT=SLIM
+=======
+    image: ghcr.io/agntcy/coffee-agntcy/logistic-accountant:latest
+    platform: linux/amd64
+    environment:
+      - DEFAULT_MESSAGE_TRANSPORT=SLIM # Do not change. SLIM is required for group conversation.
+>>>>>>> main
       - TRANSPORT_SERVER_ENDPOINT=http://logistic-slim:56400
       - OTLP_HTTP_ENDPOINT=${OTLP_HTTP_ENDPOINT:-http://otel-collector:4318}
       - ENABLE_HTTP=true
@@ -45,6 +63,7 @@ services:
     build:
       context: ../../..
       dockerfile: coffeeAGNTCY/coffee_agents/lungo/docker/Dockerfile.logistic-farm
+<<<<<<< HEAD
     #image: ghcr.io/agntcy/coffee-agntcy/logistic-farm:latest
     platform: linux/amd64
     environment:
@@ -57,19 +76,32 @@ services:
 #      - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-}
 #      - LLM_PROVIDER=${LLM_PROVIDER}
       - DEFAULT_MESSAGE_TRANSPORT=SLIM
+=======
+    image: ghcr.io/agntcy/coffee-agntcy/logistic-farm:latest
+    platform: linux/amd64
+    environment:
+      - DEFAULT_MESSAGE_TRANSPORT=SLIM # Do not change. SLIM is required for group conversation.
+>>>>>>> main
       - TRANSPORT_SERVER_ENDPOINT=http://logistic-slim:56400
       - OTLP_HTTP_ENDPOINT=${OTLP_HTTP_ENDPOINT:-http://otel-collector:4318}
       - ENABLE_HTTP=true
     ports:
       - "9093:9093"
 
+<<<<<<< HEAD
     # yaml
+=======
+>>>>>>> main
   logistic-slim:
     image: ghcr.io/agntcy/slim:0.4.0
     container_name: logistic-slim
     ports:
+<<<<<<< HEAD
       - "56400:56400"   # pubsub
       - "56401:56401"   # controller (optional if you need external access)
+=======
+      - "56400:56400"
+>>>>>>> main
     environment:
       - PASSWORD=${SLIM_GATEWAY_PASSWORD:-dummy_password}
       - CONFIG_PATH=/config.yaml
@@ -77,13 +109,20 @@ services:
       - ./config/docker/slim/logistic-server-config.yaml:/config.yaml
     command: ["/slim", "--config", "/config.yaml"]
 
+<<<<<<< HEAD
   # Exchange server App (farm client)
+=======
+>>>>>>> main
   logistic-supervisor:
     build:
       context: ../../..
       dockerfile: coffeeAGNTCY/coffee_agents/lungo/docker/Dockerfile.logistic-supervisor
+<<<<<<< HEAD
 #    image: ghcr.io/agntcy/coffee-agntcy/lungo-exchange:latest
     container_name: logistic-supervisor
+=======
+    image: ghcr.io/agntcy/coffee-agntcy/logistic-supervisor:latest
+>>>>>>> main
     platform: linux/amd64
     environment:
       - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT:-}
@@ -94,7 +133,11 @@ services:
       - OPENAI_ENDPOINT=${OPENAI_ENDPOINT:-}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-}
       - LLM_PROVIDER=${LLM_PROVIDER}
+<<<<<<< HEAD
       - DEFAULT_MESSAGE_TRANSPORT=SLIM
+=======
+      - DEFAULT_MESSAGE_TRANSPORT=SLIM # Do not change. SLIM is required for group conversation.
+>>>>>>> main
       - TRANSPORT_SERVER_ENDPOINT=http://logistic-slim:56400
       - OTLP_HTTP_ENDPOINT=${OTLP_HTTP_ENDPOINT:-http://otel-collector:4318}
     ports:

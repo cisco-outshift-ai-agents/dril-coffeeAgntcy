@@ -7,12 +7,21 @@ from a2a.types import (
     AgentSkill)
 
 AGENT_SKILL = AgentSkill(
+<<<<<<< HEAD
     id="get_shipping_status",
     name="Get Shipping Status",
     description="Returns the shipping status of coffee beans from the farms.",
     tags=["coffee", "shipping"],
     examples=[
         "What is the current shipping status of my coffee order?",
+=======
+    id="get_farm_status",
+    name="Get Farm Status",
+    description="Returns the farm status of coffee beans from the farms.",
+    tags=["coffee", "farm"],
+    examples=[
+        "What is the current farm status of my coffee order?",
+>>>>>>> main
         "How much coffee does the Brazil farm produce?",
         "What is the yield of the Brazil coffee farm in pounds?",
         "How many pounds of coffee does the Brazil farm produce?",

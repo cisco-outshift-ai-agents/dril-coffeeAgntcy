@@ -45,6 +45,7 @@ class FarmAgentExecutor(AgentExecutor):
         event_queue: EventQueue,
     ) -> None:
         """
+<<<<<<< HEAD
         Execute the agent's logic for a given request context.
 
         This method handles incoming message requests to generate a status of shipping.
@@ -58,6 +59,24 @@ class FarmAgentExecutor(AgentExecutor):
         Args:
             context: The request context containing the message, task ID, and other relevant data.
             event_queue: The queue to publish events to.
+=======
+        Run the logistic farm agent for a single incoming request.
+
+        Responsibilities:
+        - Validate the request payload.
+        - Extract user input from the context.
+        - Create and enqueue a new Task if one does not exist.
+        - Invoke the FarmAgent to advance the order (e.g., toward HANDOVER_TO_SHIPPER) or
+          generate a status/update message.
+        - Enqueue the agent's response as a Message event.
+
+        May emit: Task, Message, TaskStatusUpdateEvent, TaskArtifactUpdateEvent.
+        Returns after the agent completes processing or yields control.
+
+        Args:
+            context: Request context containing the incoming Message, Task (if any), and metadata.
+            event_queue: Event queue used to publish resulting events.
+>>>>>>> main
         """
 
         logger.debug("Received message request: %s", context.message)

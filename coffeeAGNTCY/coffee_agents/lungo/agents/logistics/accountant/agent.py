@@ -119,6 +119,7 @@ class AccountantAgent:
                 return message.content.strip()
 
         # If no valid AIMessage found, return the last message as a fallback
+<<<<<<< HEAD
         return messages[-1].content.strip() if messages else "No valid response generated."
 
 
@@ -149,3 +150,6 @@ if __name__ == "__main__":
     import asyncio
 
     asyncio.run(main())
+=======
+        return messages[-1].content.strip()
+>>>>>>> main

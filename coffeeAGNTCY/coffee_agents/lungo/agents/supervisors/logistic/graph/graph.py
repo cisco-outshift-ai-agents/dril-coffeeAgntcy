@@ -3,6 +3,7 @@
 
 import logging
 import uuid
+<<<<<<< HEAD
 from pydantic import BaseModel, Field
 
 from langchain_core.prompts import PromptTemplate
@@ -11,12 +12,22 @@ from langchain_core.messages import AIMessage, SystemMessage
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.graph import MessagesState
 from langgraph.graph import StateGraph, END
+=======
+
+from langchain_core.prompts import PromptTemplate
+from langchain_core.messages import AIMessage
+
+from langgraph.graph.state import CompiledStateGraph
+from langgraph.graph import MessagesState
+from langgraph.graph import StateGraph
+>>>>>>> main
 from langgraph.prebuilt import ToolNode
 from ioa_observe.sdk.decorators import agent, tool, graph
 
 from common.llm import get_llm
 from agents.supervisors.logistic.graph.tools import (
     create_order,
+<<<<<<< HEAD
     tools_or_next
 )
 
@@ -31,6 +42,17 @@ class NodeStates:
     REFLECTION = "reflection"
     GENERAL_INFO = "general"
 
+=======
+    next_tools_or_end
+)
+
+logger = logging.getLogger("lungo.logistic.supervisor.graph")
+
+class NodeStates:
+    ORDERS = "orders_broker"
+    ORDERS_TOOLS = "orders_tools"
+
+>>>>>>> main
 class GraphState(MessagesState):
     """
     Represents the state of our graph, passed between nodes.
@@ -65,13 +87,17 @@ class LogisticGraph:
         CompiledGraph: A fully compiled LangGraph instance ready for execution.
         """
 
+<<<<<<< HEAD
         self.supervisor_llm = None
         self.reflection_llm = None
+=======
+>>>>>>> main
         self.orders_llm = None
 
         workflow = StateGraph(GraphState)
 
         # --- 1. Define Node States ---
+<<<<<<< HEAD
 
         workflow.add_node(NodeStates.SUPERVISOR, self._supervisor_node)
         workflow.add_node(NodeStates.ORDERS, self._orders_node)
@@ -170,6 +196,20 @@ class LogisticGraph:
           "next_node": next_node,
           "messages": [SystemMessage(content=response.reason)],
         }
+=======
+        workflow.add_node(NodeStates.ORDERS, self._orders_node)
+        workflow.add_node(NodeStates.ORDERS_TOOLS, ToolNode([create_order]))
+
+        # --- 2. Define the Agentic Workflow ---
+        workflow.set_entry_point(NodeStates.ORDERS)
+
+        # Add conditional edges from the supervisor
+        workflow.add_conditional_edges(NodeStates.ORDERS, next_tools_or_end)
+        workflow.add_edge(NodeStates.ORDERS_TOOLS, NodeStates.ORDERS)
+
+        return workflow.compile()
+
+>>>>>>> main
 
     async def _orders_node(self, state: GraphState) -> dict:
         if not self.orders_llm:
@@ -213,12 +253,15 @@ class LogisticGraph:
         return {
             "messages": [llm_response]
         }
+<<<<<<< HEAD
     
     def _general_response_node(self, state: GraphState) -> dict:
         return {
             "next_node": END,
             "messages": [AIMessage(content="I'm not sure how to handle that. Could you please clarify?")],
         }
+=======
+>>>>>>> main
 
     async def serve(self, prompt: str):
         """
@@ -257,4 +300,8 @@ class LogisticGraph:
             raise ValueError(str(ve))
         except Exception as e:
             logger.error(f"Error in serve method: {e}")
+<<<<<<< HEAD
             raise Exception(str(e))
+=======
+            raise Exception(str(e))
+>>>>>>> main

@@ -191,7 +191,28 @@ docker-compose up weather-mcp-server --build
 
 This MCP server is required for the Colombia Farm to function correctly.
 
-**Step 3: Run the Farms**
+**Step 3A: Run the Farms (via Make targets)**
+
+You can start each server with a `make` target (after running `uv sync` and configuring your `.env`). Open one terminal per service.
+
+Start the Weather MCP (required for Colombia farm):
+```sh
+make weather-mcp
+```
+
+Start farms (each in its own terminal):
+```sh
+make brazil-farm
+make colombia-farm
+make vietnam-farm
+```
+
+Start the Exchange (Auction Supervisor API):
+```sh
+make auction-supervisor
+```
+
+**Step 3B: Run the Farms (local Python or Docker Compose)**
 
 Start all the farm servers, that act as A2A servers, by executing:
 
@@ -317,9 +338,12 @@ By default, the UI will be available at [http://localhost:3000/](http://localhos
 ### Group Conversation Implementation
 
 Detailed architecture, message flows (SLIM pubsub vs controller channels), service roles, and port configuration are documented in [Group Conversation Docs](./docs/group_conversation.md).
+<<<<<<< HEAD
 
 Run the logistic stack (SLIM gateway and related services):
 
 ```sh
 docker compose -f docker-compose.logistic.yaml up
 ```
+=======
+>>>>>>> main
