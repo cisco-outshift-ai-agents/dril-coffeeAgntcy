@@ -17,7 +17,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   selectedPattern,
   onPatternChange,
 }) => {
-  const [isTransportExpanded, setIsTransportExpanded] = useState(true)
+  const [isPublishSubscribeExpanded, setIsPublishSubscribeExpanded] =
+    useState(true)
+  const [isGroupCommunicationExpanded, setIsGroupCommunicationExpanded] =
+    useState(true)
   const [transport, setTransport] = useState<string>("")
 
   const DEFAULT_EXCHANGE_APP_API_URL = "http://127.0.0.1:8000"
@@ -40,8 +43,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     fetchTransportConfig()
   }, [EXCHANGE_APP_API_URL])
 
-  const handleTransportToggle = () => {
-    setIsTransportExpanded(!isTransportExpanded)
+  const handlePublishSubscribeToggle = () => {
+    setIsPublishSubscribeExpanded(!isPublishSubscribeExpanded)
+  }
+
+  const handleGroupCommunicationToggle = () => {
+    setIsGroupCommunicationExpanded(!isGroupCommunicationExpanded)
   }
 
   return (
@@ -64,8 +71,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div>
               <SidebarDropdown
                 title="Publish Subscribe "
-                isExpanded={isTransportExpanded}
-                onToggle={handleTransportToggle}
+                isExpanded={isPublishSubscribeExpanded}
+                onToggle={handlePublishSubscribeToggle}
               >
                 <SidebarItem
                   title={`A2A ${transport}`}
@@ -94,8 +101,8 @@ const Sidebar: React.FC<SidebarProps> = ({
             <div>
               <SidebarDropdown
                 title="Secure Group Communication"
-                isExpanded={isTransportExpanded}
-                onToggle={handleTransportToggle}
+                isExpanded={isGroupCommunicationExpanded}
+                onToggle={handleGroupCommunicationToggle}
               >
                 <SidebarItem
                   title="SLIM"

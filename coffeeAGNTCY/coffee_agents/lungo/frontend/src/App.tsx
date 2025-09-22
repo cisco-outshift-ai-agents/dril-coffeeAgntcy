@@ -34,6 +34,8 @@ const App: React.FC = () => {
   const [currentUserMessage, setCurrentUserMessage] = useState<string>("")
   const [agentResponse, setAgentResponse] = useState<string>("")
   const [isAgentLoading, setIsAgentLoading] = useState<boolean>(false)
+  const [groupCommResponseReceived, setGroupCommResponseReceived] =
+    useState<boolean>(false)
   const [messages, setMessages] = useState<Message[]>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY)
     return saved ? JSON.parse(saved) : []
@@ -65,8 +67,11 @@ const App: React.FC = () => {
 
   const handleApiResponse = (response: string, isError: boolean = false) => {
     setAgentResponse(response)
-
     setIsAgentLoading(false)
+
+    if (selectedPattern === PATTERNS.GROUP_COMMUNICATION && !isError) {
+      setGroupCommResponseReceived(true)
+    }
 
     setMessages((prev) => {
       const updated = [...prev]
@@ -85,7 +90,7 @@ const App: React.FC = () => {
     setButtonClicked(true)
 
     try {
-      const response = await sendMessage(query)
+      const response = await sendMessage(query, selectedPattern)
       handleApiResponse(response, false)
     } catch (error) {
       logger.apiError("/agent/prompt", error)
@@ -100,7 +105,20 @@ const App: React.FC = () => {
     setIsAgentLoading(false)
     setButtonClicked(false)
     setAiReplied(false)
+    setGroupCommResponseReceived(false)
   }
+
+  useEffect(() => {
+    setCurrentUserMessage("")
+    setAgentResponse("")
+    setIsAgentLoading(false)
+    setButtonClicked(false)
+    setAiReplied(false)
+
+    if (selectedPattern !== PATTERNS.GROUP_COMMUNICATION) {
+      setGroupCommResponseReceived(false)
+    }
+  }, [selectedPattern])
 
   return (
     <ThemeProvider>
@@ -123,6 +141,7 @@ const App: React.FC = () => {
                 setAiReplied={setAiReplied}
                 chatHeight={chatHeightValue}
                 isExpanded={isExpanded}
+                groupCommResponseReceived={groupCommResponseReceived}
               />
             </div>
 
@@ -136,6 +155,10 @@ const App: React.FC = () => {
                 showCoffeePrompts={
                   selectedPattern === PATTERNS.PUBLISH_SUBSCRIBE
                 }
+                showLogisticsPrompts={
+                  selectedPattern === PATTERNS.GROUP_COMMUNICATION
+                }
+                pattern={selectedPattern}
                 onCoffeeGraderSelect={handleCoffeeGraderSelect}
                 onDropdownSelect={handleDropdownSelect}
                 onUserInput={handleUserInput}
