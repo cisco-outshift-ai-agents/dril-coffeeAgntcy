@@ -103,7 +103,7 @@ const PUBLISH_SUBSCRIBE_CONFIG: GraphConfig = {
             className="dark-icon h-4 w-4 object-contain"
           />
         ),
-        label1: "Supervisor Agent",
+        label1: "Auction Agent",
         label2: "Buyer",
         handles: "source",
         githubLink:
@@ -257,7 +257,7 @@ const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
             className="dark-icon h-4 w-4 object-contain"
           />
         ),
-        label1: "Supervisor Agent",
+        label1: "Logistics Agent",
         label2: "Buyer",
         handles: "none",
         githubLink:
@@ -333,6 +333,21 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
   title: "Secure Group Communication Logistics Network",
   nodes: [
     {
+      id: "logistics-group",
+      type: "group",
+      data: {
+        label: "Logistics Group",
+      },
+      position: { x: 50, y: 50 },
+      style: {
+        width: 900,
+        height: 650,
+        backgroundColor: "var(--group-background)",
+        border: "none",
+        borderRadius: "8px",
+      },
+    },
+    {
       id: "1",
       type: "customNode",
       data: {
@@ -343,29 +358,16 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
             className="dark-icon h-4 w-4 object-contain"
           />
         ),
-        label1: "Supervisor Agent",
+        label1: "Logistics Agent",
         label2: "Buyer",
         handles: "source",
         githubLink:
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/supervisors/auction/graph/graph.py#L116",
         agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
-      position: { x: 527.1332569384248, y: 76.4805787605829 },
-    },
-    {
-      id: "logistics-group",
-      type: "group",
-      data: {
-        label: "Logistics Group",
-      },
-      position: { x: 100, y: 375 },
-      style: {
-        width: 800,
-        height: 280,
-        backgroundColor: "var(--group-background)",
-        border: "none",
-        borderRadius: "8px",
-      },
+      position: { x: 375, y: -25 },
+      parentId: "logistics-group",
+      extent: "parent",
     },
     {
       id: "2",
@@ -376,8 +378,9 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         githubLink:
           "https://github.com/agntcy/app-sdk/blob/main/src/agntcy_app_sdk/transports/slim/transport.py#L29",
       },
-      position: { x: 235, y: -25 },
+      position: { x: 310, y: 250 },
       parentId: "logistics-group",
+      extent: "parent",
     },
     {
       id: "3",
@@ -398,7 +401,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/farm/agent.py#L30",
         agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
-      position: { x: 50, y: 180 },
+      position: { x: 100, y: 530 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -418,7 +421,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/shipper-logistics-agent",
       },
-      position: { x: 300, y: 180 },
+      position: { x: 350, y: 530 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -438,7 +441,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/accountant-logistics-agent",
       },
-      position: { x: 550, y: 180 },
+      position: { x: 600, y: 530 },
       parentId: "logistics-group",
       extent: "parent",
     },
