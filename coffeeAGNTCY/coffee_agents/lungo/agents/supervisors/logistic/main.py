@@ -1,8 +1,9 @@
 # Copyright AGNTCY Contributors (https://github.com/agntcy)
 # SPDX-License-Identifier: Apache-2.0
 
+import asyncio
 import logging
-
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -55,9 +56,12 @@ async def handle_prompt(request: PromptRequest):
   try:
     # session_start() # Start a new tracing session
     # Process the prompt using the exchange graph
-    result = await logistic_graph.serve(request.prompt)
+    result = await asyncio.wait_for(logistic_graph.serve(request.prompt), timeout=os.getenv("LOGISTIC_TIMEOUT", 200))
     logger.info(f"Final result from LangGraph: {result}")
     return {"response": result}
+  except asyncio.TimeoutError:
+    logger.error("Request timed out after %s seconds", os.getenv("LOGISTIC_TIMEOUT", 200))
+    raise HTTPException(status_code=504, detail=f"Request timed out after {os.getenv("LOGISTIC_TIMEOUT", 200)} seconds")
   except ValueError as ve:
     raise HTTPException(status_code=400, detail=str(ve))
   except Exception as e:
