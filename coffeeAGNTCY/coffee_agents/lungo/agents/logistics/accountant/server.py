@@ -15,7 +15,6 @@ from agent_executor import AccountantAgentExecutor
 from config.config import (
     DEFAULT_MESSAGE_TRANSPORT,
     TRANSPORT_SERVER_ENDPOINT,
-    GROUP_CHAT_TOPIC,
     ENABLE_HTTP
 )
 from card import AGENT_CARD
@@ -24,12 +23,42 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize a multi-protocol, multi-transport agntcy factory.
-factory = AgntcyFactory("lungo_accountant", enable_tracing=False)
+factory = AgntcyFactory("lungo_accountant", enable_tracing=True)
 
 async def run_http_server(server):
     """Run the HTTP/REST server."""
+    from fastapi import FastAPI
+    from starlette.responses import JSONResponse
+    from starlette.routing import Route
+
+    # Define the liveness probe endpoint
+    async def liveness_probe(request):
+        try:
+            transport = factory.create_transport(
+                DEFAULT_MESSAGE_TRANSPORT,
+                endpoint=TRANSPORT_SERVER_ENDPOINT,
+                name="default/default/liveness_probe",
+            )
+            _ = await asyncio.wait_for(
+                factory.create_client(
+                    "A2A",
+                    agent_topic=A2AProtocol.create_agent_topic(AGENT_CARD),
+                    transport=transport,
+                ),
+                timeout=30,
+            )
+            return JSONResponse({"status": "alive"})
+        except asyncio.TimeoutError:
+            return JSONResponse({"error": "Timeout occurred while creating client."}, status_code=500)
+        except Exception as e:
+            return JSONResponse({"error": f"Error occurred: {str(e)}"}, status_code=500)
+
+    # Add the liveness route to the FastAPI app
+    app = server.build()
+    app.router.routes.append(Route("/v1/health", liveness_probe, methods=["GET"]))
+
     try:
-        config = Config(app=server.build(), host="0.0.0.0", port=9092, loop="asyncio")
+        config = Config(app=app, host="0.0.0.0", port=9092, loop="asyncio")
         userver = Server(config)
         await userver.serve()
     except Exception as e:
@@ -41,7 +70,7 @@ async def run_transport(server, transport_type, endpoint, block):
         personal_topic = A2AProtocol.create_agent_topic(AGENT_CARD)
         transport = factory.create_transport(transport_type, endpoint=endpoint, name=f"default/default/{personal_topic}")
         broadcast_bridge = factory.create_bridge(
-            server, transport=transport, topic=GROUP_CHAT_TOPIC
+            server, transport=transport
         )
 <<<<<<< HEAD
         # private_bridge = factory.create_bridge(server, transport=transport, topic=personal_topic)
