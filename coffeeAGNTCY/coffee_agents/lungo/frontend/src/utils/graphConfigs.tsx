@@ -243,92 +243,6 @@ const PUBLISH_SUBSCRIBE_CONFIG: GraphConfig = {
   ],
 }
 
-const GROUP_COMMUNICATION_DISCONNECTED_CONFIG: GraphConfig = {
-  title: "Order Fulfilment Agents",
-  nodes: [
-    {
-      id: "1",
-      type: "customNode",
-      data: {
-        icon: (
-          <img
-            src={supervisorIcon}
-            alt="Supervisor Icon"
-            className="dark-icon h-4 w-4 object-contain"
-          />
-        ),
-        label1: "Logistics Agent",
-        label2: "Buyer",
-        handles: "none",
-        githubLink:
-          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/supervisors/auction/graph/graph.py#L116",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/34f05b1e-3bd3-4a21-b8c5-e9f191942ed0",
-      },
-      position: { x: 250, y: 180 },
-    },
-    {
-      id: "3",
-      type: "customNode",
-      data: {
-        icon: (
-          <img
-            src={farmAgentIcon}
-            alt="Farm Agent Icon"
-            className="dark-icon h-4 w-4 object-contain opacity-100"
-          />
-        ),
-        label1: "Tatooine",
-        label2: "Coffee Farm Agent",
-        handles: "none",
-        farmName: "Tatooine Farm",
-        githubLink:
-          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/farms/tatooine/agent.py#L30",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/tatooine-farm-agent",
-      },
-      position: { x: 550, y: 180 },
-    },
-    {
-      id: "4",
-      type: "customNode",
-      data: {
-        icon: (
-          <Truck className="dark-icon h-4 w-4 object-contain opacity-100" />
-        ),
-        label1: "Shipper",
-        label2: "Shipper Agent",
-        handles: "none",
-        agentName: "Shipper Logistics",
-        githubLink:
-          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/shipper/agent.py#L30",
-        agentDirectoryLink:
-          "https://agent-directory.outshift.com/explore/shipper-logistics-agent",
-      },
-      position: { x: 250, y: 350 },
-    },
-    {
-      id: "5",
-      type: "customNode",
-      data: {
-        icon: (
-          <Calculator className="dark-icon h-4 w-4 object-contain opacity-100" />
-        ),
-        label1: "Accountant",
-        label2: "Accountant Agent",
-        handles: "none",
-        agentName: "Accountant Logistics",
-        githubLink:
-          "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/accountant/agent.py#L30",
-        agentDirectoryLink: "https://agent-directory.outshift.com/",
-      },
-      position: { x: 550, y: 350 },
-    },
-  ],
-  edges: [],
-  animationSequence: [],
-}
-
 const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
   title: "Secure Group Communication Logistics Network",
   nodes: [
@@ -365,7 +279,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/supervisors/auction/graph/graph.py#L116",
         agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
-      position: { x: 375, y: -25 },
+      position: { x: 150, y: 100 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -378,7 +292,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         githubLink:
           "https://github.com/agntcy/app-sdk/blob/main/src/agntcy_app_sdk/transports/slim/transport.py#L29",
       },
-      position: { x: 375, y: 250 },
+      position: { x: 380, y: 270 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -395,13 +309,13 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         ),
         label1: "Tatooine",
         label2: "Coffee Farm Agent",
-        handles: "target",
+        handles: "source",
         farmName: "Tatooine Farm",
         githubLink:
           "https://github.com/agntcy/coffeeAgntcy/blob/main/coffeeAGNTCY/coffee_agents/lungo/agents/logistics/farm/agent.py#L30",
         agentDirectoryLink: "https://agent-directory.outshift.com/",
       },
-      position: { x: 100, y: 530 },
+      position: { x: 550, y: 100 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -421,7 +335,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/shipper-logistics-agent",
       },
-      position: { x: 350, y: 530 },
+      position: { x: 150, y: 500 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -441,7 +355,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         agentDirectoryLink:
           "https://agent-directory.outshift.com/explore/accountant-logistics-agent",
       },
-      position: { x: 600, y: 530 },
+      position: { x: 500, y: 500 },
       parentId: "logistics-group",
       extent: "parent",
     },
@@ -451,28 +365,40 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
       id: "1-2",
       source: "1",
       target: "2",
-      targetHandle: "top",
+      targetHandle: "top_left",
       data: { label: "A2A" },
       type: "custom",
     },
     {
-      id: "2-branches",
+      id: "3-2",
+      source: "3",
+      target: "2",
+      targetHandle: "top_right",
+      data: { label: "A2A" },
+      type: "custom",
+    },
+    {
+      id: "2-4",
       source: "2",
-      target: "3",
-      sourceHandle: "bottom_center",
-      data: {
-        label: "A2A",
-        branches: ["3", "4", "5"],
-      },
-      type: "branching",
+      target: "4",
+      sourceHandle: "bottom_left",
+      data: { label: "A2A" },
+      type: "custom",
+    },
+    {
+      id: "2-5",
+      source: "2",
+      target: "5",
+      sourceHandle: "bottom_right",
+      data: { label: "A2A" },
+      type: "custom",
     },
   ],
   animationSequence: [
     { ids: ["1"] },
     { ids: ["1-2"] },
     { ids: ["2"] },
-    { ids: ["2-branches"] },
-    { ids: ["3", "4", "5"] },
+    { ids: ["3-2", "2-4", "2-5", "3", "4", "5"] },
     { ids: ["3"] },
     { ids: ["4"] },
     { ids: ["5"] },
@@ -480,19 +406,14 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
   ],
 }
 
-export const getGraphConfig = (
-  pattern: string,
-  isConnected: boolean = true,
-): GraphConfig => {
+export const getGraphConfig = (pattern: string): GraphConfig => {
   switch (pattern) {
     case "slim_a2a":
       return SLIM_A2A_CONFIG
     case "publish_subscribe":
       return PUBLISH_SUBSCRIBE_CONFIG
     case "group_communication":
-      return isConnected
-        ? GROUP_COMMUNICATION_CONFIG
-        : GROUP_COMMUNICATION_DISCONNECTED_CONFIG
+      return GROUP_COMMUNICATION_CONFIG
     default:
       return PUBLISH_SUBSCRIBE_CONFIG
   }
