@@ -378,7 +378,7 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
         githubLink:
           "https://github.com/agntcy/app-sdk/blob/main/src/agntcy_app_sdk/transports/slim/transport.py#L29",
       },
-      position: { x: 310, y: 250 },
+      position: { x: 375, y: 250 },
       parentId: "logistics-group",
       extent: "parent",
     },

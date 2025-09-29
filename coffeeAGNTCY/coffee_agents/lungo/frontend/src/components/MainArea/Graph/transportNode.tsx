@@ -30,13 +30,11 @@ const TransportNode: React.FC<TransportNodeProps> = ({ data }) => {
     ? "bg-node-background-active outline outline-2 outline-accent-border shadow-[var(--shadow-default)_0px_6px_8px]"
     : "bg-node-background"
 
-  const widthClass = data.compact ? "w-[280px]" : "w-[1200px]"
-
   return (
     <div
-      className={` ${activeClasses} relative flex h-[52px] ${widthClass} items-center justify-center rounded-lg p-4 text-center text-gray-50 hover:bg-node-background-hover hover:shadow-[var(--shadow-default)_0px_6px_8px] hover:outline hover:outline-2 hover:outline-accent-border`}
+      className={` ${activeClasses} relative flex h-[120px] w-[120px] flex-col items-center justify-center rounded-full p-4 text-center text-gray-50 hover:bg-node-background-hover hover:shadow-[var(--shadow-default)_0px_6px_8px] hover:outline hover:outline-2 hover:outline-accent-border`}
     >
-      <div className="flex h-5 w-[94px] items-center justify-center whitespace-nowrap font-inter text-sm font-normal leading-5 tracking-normal text-node-text-primary opacity-100">
+      <div className="mb-2 flex h-auto w-auto items-center justify-center whitespace-nowrap text-center font-inter text-xs font-normal leading-4 tracking-normal text-node-text-primary opacity-100">
         {data.label}
       </div>
 
@@ -48,7 +46,7 @@ const TransportNode: React.FC<TransportNodeProps> = ({ data }) => {
           className="no-underline"
         >
           <div
-            className="absolute -right-4 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg border border-solid p-1 opacity-100 shadow-sm transition-opacity duration-200 ease-in-out"
+            className="flex h-6 w-6 cursor-pointer items-center justify-center rounded-lg border border-solid p-1 opacity-100 shadow-sm transition-opacity duration-200 ease-in-out"
             style={{
               backgroundColor: "var(--custom-node-background)",
               borderColor: "var(--custom-node-border)",
@@ -60,7 +58,7 @@ const TransportNode: React.FC<TransportNodeProps> = ({ data }) => {
               e.currentTarget.style.opacity = "1"
             }}
           >
-            <img src={githubIconSrc} alt="GitHub" className="h-5 w-5" />
+            <img src={githubIconSrc} alt="GitHub" className="h-4 w-4" />
           </div>
         </a>
       )}
