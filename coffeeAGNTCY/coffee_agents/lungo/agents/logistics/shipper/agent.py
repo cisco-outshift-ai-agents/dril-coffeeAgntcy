@@ -110,37 +110,4 @@ class ShipperAgent:
                 return message.content.strip()
 
         # If no valid AIMessage found, return the last message as a fallback
-<<<<<<< HEAD
-        return messages[-1].content.strip() if messages else "No valid response generated."
-
-
-async def main():
-    agent = ShipperAgent()
-
-    print("--- Testing Shipper Agent ---")
-    test_messages = [
-        "HANDOVER_TO_SHIPPER",
-        "PAYMENT_COMPLETE",
-        "INVALID_INPUT",
-        "handover_to_shipper",  # Test case sensitivity
-        "payment_complete",  # Test case sensitivity
-        "random message",
-    ]
-
-    for msg in test_messages:
-        print(f"\nInput: {msg}")
-        try:
-            response = await agent.ainvoke(msg)
-            print(f"Output: {response}")
-        except Exception as e:
-            print(f"Error: {e}")
-
-
-# --- Example Usage ---
-if __name__ == "__main__":
-    import asyncio
-
-    asyncio.run(main())
-=======
         return messages[-1].content.strip()
->>>>>>> main
