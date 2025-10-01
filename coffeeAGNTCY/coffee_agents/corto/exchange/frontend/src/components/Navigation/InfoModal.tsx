@@ -34,7 +34,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
             <div className="space-y-2 text-sm text-modal-text-secondary">
               <div className="flex justify-between">
                 <span>Release Version:</span>
-                <span className="font-mono text-modal-accent">0.0.44</span>
+                <span className="font-mono text-modal-accent">0.0.45</span>
               </div>
               <div className="flex justify-between">
                 <div className="flex justify-between">
