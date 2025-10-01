@@ -50,7 +50,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
             <div className="space-y-2 text-sm text-modal-text-secondary">
               <div className="flex justify-between">
                 <span>AGNTCY App SDK:</span>
-                <span className="font-mono text-modal-accent"> v0.2.8</span>
+                <span className="font-mono text-modal-accent"> v0.2.9</span>
               </div>
 
               <div className="flex justify-between">
