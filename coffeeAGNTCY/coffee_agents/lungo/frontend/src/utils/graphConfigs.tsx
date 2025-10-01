@@ -406,7 +406,10 @@ const GROUP_COMMUNICATION_CONFIG: GraphConfig = {
   ],
 }
 
-export const getGraphConfig = (pattern: string): GraphConfig => {
+export const getGraphConfig = (
+  pattern: string,
+  _isConnected?: boolean,
+): GraphConfig => {
   switch (pattern) {
     case "slim_a2a":
       return SLIM_A2A_CONFIG
