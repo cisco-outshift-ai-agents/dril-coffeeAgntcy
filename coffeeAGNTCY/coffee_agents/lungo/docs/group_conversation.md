@@ -119,3 +119,7 @@ Expected output:
   "response": "Order ORD-3A7F5B2C from Tatooine for 500 units at $3.50 has been successfully delivered."
 }
 ```
+
+## Visual Interface
+
+![Group Communication UI](../images/group_communication_ui.png)
