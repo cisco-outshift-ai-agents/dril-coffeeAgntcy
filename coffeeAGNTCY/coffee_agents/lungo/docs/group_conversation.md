@@ -120,6 +120,6 @@ Expected output:
 }
 ```
 
-## Visual Interface
+## Group Communication UI
 
 ![Group Communication UI](../images/group_communication_ui.png)
