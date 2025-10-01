@@ -39,7 +39,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
               <div className="flex justify-between">
                 <div className="flex justify-between">
                   <span>Build Date:</span>
-                  <span className="font-mono">September 26, 2025</span>
+                  <span className="font-mono">October 1, 2025</span>
                 </div>
               </div>
             </div>
