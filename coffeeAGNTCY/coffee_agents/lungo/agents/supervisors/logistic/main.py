@@ -19,6 +19,7 @@ from config.config import DEFAULT_MESSAGE_TRANSPORT
 setup_logging()
 logger = logging.getLogger("lungo.logistic.supervisor.main")
 
+
 load_dotenv()
 
 # Initialize the shared agntcy factory with tracing enabled
@@ -86,3 +87,5 @@ async def get_config():
 # Run the FastAPI server using uvicorn
 if __name__ == "__main__":
   uvicorn.run("main:app", host="0.0.0.0", port=9090, reload=True)
+
+

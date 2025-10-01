@@ -6,8 +6,8 @@ The **Lungo Demo** is a continuously evolving showcase of interoperable open-sou
 
 The current demo models a **supervisor-worker agent ecosystem**, where:
 
-- The **Supervisor Agent** acts as a *Coffee Exchange*, responsible for managing inventory and fulfilling orders.
-- The **Worker Agents** represent *Coffee Farms*, which supply the inventory and provide order information.
+- The **Supervisor Agent** acts as a _Coffee Exchange_, responsible for managing inventory and fulfilling orders.
+- The **Worker Agents** represent _Coffee Farms_, which supply the inventory and provide order information.
 
 All agents are implemented as **directed LangGraphs** with **Agent-to-Agent (A2A)** integration. The user interface communicates with the Supervisor’s API to submit prompts. These prompts are processed through the LangGraph and routed via an A2A client to the appropriate Farm’s A2A server.
 
@@ -31,6 +31,7 @@ Before you begin, ensure the following tools are installed:
 
 - **uv**: A Python package and environment manager.  
   Install via Homebrew:
+
   ```sh
   brew install uv
   ```
@@ -48,6 +49,7 @@ Before you begin, ensure the following tools are installed:
 
 1. **(Optional) Create a Virtual Environment**  
    Initialize your virtual environment using `uv`:
+
    ```sh
    uv venv
    source .venv/bin/activate
@@ -55,27 +57,31 @@ Before you begin, ensure the following tools are installed:
 
 2. **Install Python Dependencies**  
    Use `uv` to install all required dependencies:
+
    ```sh
    uv sync
    ```
+
    Navigate to the Lungo project directory, set the PYTHONPATH environment variable to the root directory of the lungo project. This is necessary for running the application locally.
+
    ```sh
    # In the lungo root directory
    export PYTHONPATH=$(pwd)
    ```
 
 3. **Configure Environment Variables**  
-   Copy the example environment file:
+    Copy the example environment file:
+
    ```sh
    cp .env.example .env
    ```
-   
+
    **Configure LLM Provider, Credentials and OTEL endpoint**
 
    Then update `.env` with your LLM provider, credentials and OTEL endpoint. For example:
 
-   *OpenAI:*
-   
+   _OpenAI:_
+
    ```env
     LLM_PROVIDER=openai
     OPENAI_API_KEY="your_openai_api_key_here"
@@ -83,8 +89,8 @@ Before you begin, ensure the following tools are installed:
     OPENAI_MODEL_NAME=gpt-4o
    ```
 
-   *Azure OpenAI:*
-   
+   _Azure OpenAI:_
+
    ```env
     LLM_PROVIDER=azure-openai
     AZURE_OPENAI_ENDPOINT=https://your-azure-resource.openai.azure.com/
@@ -92,14 +98,14 @@ Before you begin, ensure the following tools are installed:
     AZURE_OPENAI_API_KEY=your_azure_api_key
     AZURE_OPENAI_API_VERSION=2023-12-01-preview
    ```
-   
-   *OTEL:*
-   
+
+   _OTEL:_
+
    ```env
    OTLP_HTTP_ENDPOINT="http://localhost:4318"
    ```
-   
-  **Optional: Configure Transport Layer**
+
+   **Optional: Configure Transport Layer**
 
    You can also set the transport protocol and server endpoint by adding the following optional variables:
 
@@ -116,6 +122,7 @@ Before you begin, ensure the following tools are installed:
 **Enable Observability with Observe SDK**
 
 Make sure the following Python dependency is installed:
+
 ```
 ioa-observe-sdk==1.0.12
 ```
@@ -123,11 +130,13 @@ ioa-observe-sdk==1.0.12
 For advanced observability of your multi-agent system, integrate the [Observe SDK](https://github.com/agntcy/observe/blob/main/GETTING-STARTED.md).
 
 - Use the following decorators to instrument your code:
+
   - `@graph(name="graph_name")`: Captures MAS topology state for observability.
   - `@agent(name="agent_name", description="Some description")`: Tracks individual agent nodes and activities.
   - `@tool(name="tool_name", description="Some description")`: Monitors tool usage and performance.
 
 - **To enable tracing for the Lungo multi-agent system:**
+
   - In code, set the factory with tracing enabled:
     ```python
     AgntcyFactory("lungo.exchange", enable_tracing=True)
@@ -135,6 +144,7 @@ For advanced observability of your multi-agent system, integrate the [Observe SD
 
 - **To start a new trace session for each prompt execution:**  
   Call `session_start()` at the beginning of each prompt execution to ensure each prompt trace is tracked as a new session:
+
   ```python
   from ioa_observe_sdk import session_start
 
@@ -146,24 +156,22 @@ For advanced observability of your multi-agent system, integrate the [Observe SD
 
 ### Execution
 
->  **Note:** Each service should be started in its **own terminal window** and left running while the app is in use.
+> **Note:** Each service should be started in its **own terminal window** and left running while the app is in use.
 >
 > **Shortcut:** If you prefer to spin up all services at once without reading through the steps below, you canspin
 > up the entire stack via Docker Compose:
 >
->```sh
->docker compose up
->```
+> ```sh
+> docker compose up
+> ```
 >
->Once running, access the UI at: [http://localhost:3000/](http://localhost:3000/), access grafana dashboard at: [http://localhost:3001/](http://localhost:3001/)
->
+> Once running, access the UI at: [http://localhost:3000/](http://localhost:3000/), access grafana dashboard at: [http://localhost:3001/](http://localhost:3001/)
 >
 > However, it is recommended to go through the steps below to better understand each component's role.
 
-
 **Step 1: Run the SLIM Message Bus Gateway and Observability stack**
 
-To enable A2A communication over SLIM, you need to run the SLIM message bus gateway. 
+To enable A2A communication over SLIM, you need to run the SLIM message bus gateway.
 
 Additionally run the observability stack that has OTEL Collector, Grafana and ClickHouse DB.
 
@@ -177,13 +185,13 @@ docker-compose up slim nats clickhouse-server otel-collector grafana
 
 Start the MCP server, which uses the Nominatim API to convert location names into latitude and longitude coordinates, and then fetches weather data from the Open-Meteo API using those coordinates:
 
-*Local Python Run:*
+_Local Python Run:_
 
 ```sh
 uv run python agents/mcp_servers/weather_service.py
 ```
 
-*Docker Compose:*
+_Docker Compose:_
 
 ```sh
 docker-compose up weather-mcp-server --build
@@ -196,11 +204,13 @@ This MCP server is required for the Colombia Farm to function correctly.
 You can start each server with a `make` target (after running `uv sync` and configuring your `.env`). Open one terminal per service.
 
 Start the Weather MCP (required for Colombia farm):
+
 ```sh
 make weather-mcp
 ```
 
 Start farms (each in its own terminal):
+
 ```sh
 make brazil-farm
 make colombia-farm
@@ -208,6 +218,7 @@ make vietnam-farm
 ```
 
 Start the Exchange (Auction Supervisor API):
+
 ```sh
 make auction-supervisor
 ```
@@ -216,10 +227,9 @@ make auction-supervisor
 
 Start all the farm servers, that act as A2A servers, by executing:
 
-*Local Python Run:*
->
->  **Note:** Each farm should be started in its **own terminal window**
->
+_Local Python Run:_
+
+> **Note:** Each farm should be started in its **own terminal window**
 
 ```sh
 uv run python agents/farms/brazil/farm_server.py
@@ -227,7 +237,7 @@ uv run python agents/farms/colombia/farm_server.py
 uv run python agents/farms/vietnam/farm_server.py
 ```
 
-*Docker Compose:*
+_Docker Compose:_
 
 ```sh
 docker-compose up brazil-farm-server colombia-farm-server vietnam-farm-server --build
@@ -239,13 +249,13 @@ The farm servers handle incoming requests from the exchange and process them usi
 
 Start the exchange, which acts as an A2A client, by running:
 
-*Local Python Run:*
+_Local Python Run:_
 
 ```sh
 uv run python agents/supervisors/auction/main.py
 ```
 
-*Docker Compose:*
+_Docker Compose:_
 
 ```sh
 docker-compose up exchange-server --build
@@ -265,26 +275,26 @@ curl -X POST http://127.0.0.1:8000/agent/prompt \
   }'
 ```
 
-*Example prompts:*
+_Example prompts:_
 
-| Intent        | Prompt                                                   |
-|---------------|-----------------------------------------------------------|
-| Check inventory for a specific farm | How much coffee does the Colombia farm have? |          
-| Check inventory across farms     | Show me the total inventory across all farms. |            
-| Order Request   | I need 50 lb of coffee beans from Colombia for 0.50 cents per lb  |   
+| Intent                              | Prompt                                                           |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| Check inventory for a specific farm | How much coffee does the Colombia farm have?                     |
+| Check inventory across farms        | Show me the total inventory across all farms.                    |
+| Order Request                       | I need 50 lb of coffee beans from Colombia for 0.50 cents per lb |
 
 **Step 5: Access the UI**
 
 Once all services are running, you can access the React UI by starting the frontend development server (from the `exchange/frontend` directory):
 
-*Local Run:*
+_Local Run:_
 
 ```sh
 npm install
 npm run dev
 ```
 
-*Docker Compose:*
+_Docker Compose:_
 
 ```sh
 docker-compose up ui --build
@@ -302,7 +312,8 @@ By default, the UI will be available at [http://localhost:3000/](http://localhos
 
    ![Screenshot: Grafana Login](images/grafana_login.png)
 
-2. **Connect/Add the ClickHouse Datasource**  
+2. **Connect/Add the ClickHouse Datasource**
+
    - In the left sidebar, click on **"Connections" > "Data sources"**.
    - If not already present, add a new **ClickHouse** datasource with the following settings:
      - **Server address:** `clickhouse-server`
@@ -312,10 +323,10 @@ By default, the UI will be available at [http://localhost:3000/](http://localhos
    - If already present, select the **ClickHouse** datasource (pre-configured in the Docker Compose setup).
 
    ![Screenshot: ClickHouse Datasource](images/grafana_clickhouse_datasource.png)
-   ![Screenshot: ClickHouse Connection](images/grafana_clickhouse_connection.png) 
+   ![Screenshot: ClickHouse Connection](images/grafana_clickhouse_connection.png)
 
+3. **Import the OTEL Traces Dashboard**
 
-3. **Import the OTEL Traces Dashboard**  
    - In the left sidebar, click on **"Dashboards" > "New" > "Import"**.
    - Upload or paste the JSON definition for the OTEL traces dashboard, located here:  
      [`lungo_dashboard.json`](lungo_dashboard.json)
@@ -324,14 +335,14 @@ By default, the UI will be available at [http://localhost:3000/](http://localhos
 
    ![Screenshot: Import Dashboard](images/grafana_import_dashboard.png)
 
-4. **View Traces for the Lungo Multi-Agent System**  
+4. **View Traces for the Lungo Multi-Agent System**
+
    - Navigate to the imported dashboard.
    - You should see traces and spans generated by the Lungo agents as they process requests.
    - **To view details of a specific trace, click on a TraceID in the dashboard. This will open the full trace and its spans for further inspection.**
 
    ![Screenshot: OTEL Dashboard](images/dashboard_grafana.png)
    ![Screenshot: OTEL Traces](images/dashboard_traces.png)
-
 
 ---
 
