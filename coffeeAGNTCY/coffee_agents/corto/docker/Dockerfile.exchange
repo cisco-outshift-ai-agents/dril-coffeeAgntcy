@@ -1,6 +1,17 @@
 # `coffeeAGNTCY/coffee_agents/corto/docker/Dockerfile.exchange`
 FROM python:3.13.0-slim
 
+# Build arguments for metadata
+ARG BUILD_VERSION=unknown
+ARG BUILD_DATE=unknown
+ARG BUILD_TIMESTAMP=unknown
+ARG GIT_COMMIT=unknown
+ARG GIT_COMMIT_SHORT=unknown
+ARG GIT_BRANCH=unknown
+ARG BUILD_NUMBER=unknown
+ARG BUILD_WORKFLOW=unknown
+ARG BUILD_ACTOR=unknown
+
 # Install system dependencies, including curl, ping, and wget
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git curl wget iputils-ping && \
@@ -17,4 +28,28 @@ COPY coffeeAGNTCY/coffee_agents/corto/pyproject.toml coffeeAGNTCY/coffee_agents/
 RUN uv sync --locked --no-editable
 
 COPY coffeeAGNTCY/coffee_agents/corto/ .
+
+# Generate .about file with build metadata
+RUN echo "{ \
+  \"app\": { \
+    \"name\": \"corto-exchange\", \
+    \"service\": \"corto-exchange\" \
+  }, \
+  \"build_and_release\": { \
+    \"release_version\": \"$BUILD_VERSION\", \
+    \"build_date\": \"$BUILD_DATE\", \
+    \"build_timestamp\": \"$BUILD_TIMESTAMP\" \
+  }, \
+  \"git\": { \
+    \"commit\": \"$GIT_COMMIT\", \
+    \"commit_short\": \"$GIT_COMMIT_SHORT\", \
+    \"branch\": \"$GIT_BRANCH\" \
+  }, \
+  \"build\": { \
+    \"number\": \"$BUILD_NUMBER\", \
+    \"workflow\": \"$BUILD_WORKFLOW\", \
+    \"actor\": \"$BUILD_ACTOR\" \
+  } \
+}" > .about
+
 CMD ["uv", "run", "python", "exchange/main.py"]
