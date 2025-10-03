@@ -4,17 +4,19 @@
 import logging
 from pathlib import Path
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-from dotenv import load_dotenv
-from config.logging_config import setup_logging
-from graph import shared
+
 from agntcy_app_sdk.factory import AgntcyFactory
-from graph.graph import ExchangeGraph
 from ioa_observe.sdk.tracing import session_start
 from common.version import get_dependencies
+
+from config.logging_config import setup_logging
+from exchange.graph import shared
+from exchange.graph.graph import ExchangeGraph
 
 setup_logging()
 logger = logging.getLogger("corto.supervisor.main")

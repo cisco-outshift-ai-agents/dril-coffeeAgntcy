@@ -184,10 +184,7 @@ const MainArea: React.FC<MainAreaProps> = ({
   )
 
   useEffect(() => {
-    const shouldAnimate =
-      pattern === "group_communication"
-        ? groupCommResponseReceived && buttonClicked
-        : buttonClicked && !aiReplied
+    const shouldAnimate = buttonClicked && !aiReplied
 
     if (!shouldAnimate) return
 
@@ -204,42 +201,10 @@ const MainArea: React.FC<MainAreaProps> = ({
       }
 
       const animateGraph = async (): Promise<void> => {
-        if (pattern === "group_communication" && groupCommResponseReceived) {
-          const connectedConfig = getGraphConfig(pattern, true)
-
-          setNodes(connectedConfig.nodes)
-          await delay(100)
-
-          setEdges(connectedConfig.edges)
-
-          await updateTransportLabels(setNodes, setEdges, pattern)
-
-          await delay(800)
-
-          const edgeElements = document.querySelectorAll(".react-flow__edge")
-          if (edgeElements.length === 0 && connectedConfig.edges.length > 0) {
-            setEdges([])
-            await delay(100)
-            setEdges(connectedConfig.edges)
-            await delay(300)
-          }
-
-          const animationSequence: AnimationStep[] =
-            connectedConfig.animationSequence
-          for (const step of animationSequence) {
-            await animate(step.ids, HIGHLIGHT.ON)
-            await animate(step.ids, HIGHLIGHT.OFF)
-          }
-
-          setAiReplied(false)
-        } else if (pattern !== "group_communication" && !aiReplied) {
-          const animationSequence: AnimationStep[] = config.animationSequence
-          for (const step of animationSequence) {
-            await animate(step.ids, HIGHLIGHT.ON)
-            await animate(step.ids, HIGHLIGHT.OFF)
-          }
-        } else {
-          setAiReplied(false)
+        const animationSequence: AnimationStep[] = config.animationSequence
+        for (const step of animationSequence) {
+          await animate(step.ids, HIGHLIGHT.ON)
+          await animate(step.ids, HIGHLIGHT.OFF)
         }
 
         setButtonClicked(false)
@@ -255,7 +220,6 @@ const MainArea: React.FC<MainAreaProps> = ({
     setButtonClicked,
     aiReplied,
     setAiReplied,
-    groupCommResponseReceived,
     pattern,
     config.animationSequence,
     updateStyle,
