@@ -7,6 +7,11 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Existing tag to generate and upload properties for (e.g., v0.67)"
+        required: false
+        type: string
 
 jobs:
   build-and-push:
@@ -44,7 +49,7 @@ jobs:
 
     permissions:
       packages: write
-      contents: read
+      contents: write
 
     steps:
       - name: Pre-cleanup Docker images
@@ -73,6 +78,15 @@ jobs:
           echo "Event: ${{ github.event_name }}"
           echo "Ref: ${{ github.ref }}"
           echo "Tag: ${{ steps.get_tag.outputs.tag_name }}"
+
+      - name: Resolve tag commit (manual)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name != ''
+        id: resolve_tag
+        run: |
+          TAG=${{ github.event.inputs.tag_name }}
+          TAG_SHA=$(git rev-list -n 1 "$TAG")
+          echo "tag_sha=$TAG_SHA" >> $GITHUB_OUTPUT
+          echo "short_tag_sha=${TAG_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push'
@@ -111,26 +125,6 @@ jobs:
             build.actor=${{ github.actor }}
             git.branch=${{ github.head_ref }}
             git.commit.short=${{ steps.metadata.outputs.short_sha }}
-
-      - name: Build Docker image (Manual)
-        if: github.event_name == 'workflow_dispatch'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ${{ matrix.image.dockerfile }}
-          push: false
-          platforms: linux/amd64,linux/arm64
-          tags: ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}:manual-${{ github.run_number }}
-          build-args: |
-            BUILD_VERSION=manual-${{ github.run_number }}
-            BUILD_DATE=${{ steps.metadata.outputs.date_formatted }}
-            BUILD_TIMESTAMP=${{ steps.metadata.outputs.date }}
-            GIT_COMMIT=${{ github.sha }}
-            GIT_COMMIT_SHORT=${{ steps.metadata.outputs.short_sha }}
-            GIT_BRANCH=${{ github.ref_name }}
-            BUILD_NUMBER=${{ github.run_number }}
-            BUILD_WORKFLOW=${{ github.workflow }}
-            BUILD_ACTOR=${{ github.actor }}
 
       - name: Build and push Docker image (main)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -171,6 +165,16 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}:${{ steps.get_tag.outputs.tag_name }}
+          build-args: |
+            BUILD_VERSION=${{ steps.get_tag.outputs.tag_name }}
+            BUILD_DATE=${{ steps.metadata.outputs.date_formatted }}
+            BUILD_TIMESTAMP=${{ steps.metadata.outputs.date }}
+            GIT_COMMIT=${{ github.sha }}
+            GIT_COMMIT_SHORT=${{ steps.metadata.outputs.short_sha }}
+            GIT_BRANCH=${{ github.ref_name }}
+            BUILD_NUMBER=${{ github.run_number }}
+            BUILD_WORKFLOW=${{ github.workflow }}
+            BUILD_ACTOR=${{ github.actor }}
           labels: |
             org.opencontainers.image.version=${{ steps.get_tag.outputs.tag_name }}
             org.opencontainers.image.created=${{ steps.metadata.outputs.date }}
@@ -181,3 +185,52 @@ jobs:
             build.actor=${{ github.actor }}
             git.branch=${{ github.ref_name }}
             git.commit.short=${{ steps.metadata.outputs.short_sha }}
+
+      - name: Create about.properties (tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo "app.name=${{ matrix.image.name }}" > about-${{ matrix.image.name }}.properties
+          echo "app.service=${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
+          echo "version=${{ steps.get_tag.outputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
+          echo "date=${{ steps.metadata.outputs.date_formatted }}" >> about-${{ matrix.image.name }}.properties
+          echo "timestamp=${{ steps.metadata.outputs.date }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.commit=${{ github.sha }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.commit.short=${{ steps.metadata.outputs.short_sha }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.branch=${{ github.ref_name }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.number=${{ github.run_number }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.workflow=${{ github.workflow }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.actor=${{ github.actor }}" >> about-${{ matrix.image.name }}.properties
+          echo "image.name=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
+          echo "image.tag=${{ steps.get_tag.outputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
+
+      - name: Upload about.properties to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            about-${{ matrix.image.name }}.properties
+
+      - name: Create about.properties (manual tag)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name != ''
+        run: |
+          echo "app.name=${{ matrix.image.name }}" > about-${{ matrix.image.name }}.properties
+          echo "app.service=${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
+          echo "version=${{ github.event.inputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
+          echo "date=${{ steps.metadata.outputs.date_formatted }}" >> about-${{ matrix.image.name }}.properties
+          echo "timestamp=${{ steps.metadata.outputs.date }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.commit=${{ steps.resolve_tag.outputs.tag_sha }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.commit.short=${{ steps.resolve_tag.outputs.short_tag_sha }}" >> about-${{ matrix.image.name }}.properties
+          echo "git.branch=${{ github.event.inputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.number=${{ github.run_number }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.workflow=${{ github.workflow }}" >> about-${{ matrix.image.name }}.properties
+          echo "build.actor=${{ github.actor }}" >> about-${{ matrix.image.name }}.properties
+          echo "image.name=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
+          echo "image.tag=${{ github.event.inputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
+
+      - name: Upload about.properties to Release (manual tag)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag_name != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          files: |
+            about-${{ matrix.image.name }}.properties

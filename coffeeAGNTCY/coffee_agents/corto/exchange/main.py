@@ -74,35 +74,70 @@ async def health_check():
 @app.get("/version")
 @app.get("/api/version")
 async def version_info():
-    """Get deployment and build information"""
-    try:
-        about_file = Path(__file__).parent.parent / ".about"
-        if about_file.exists():
-            with open(about_file, 'r') as f:
-                about_data = json.load(f)
-                logger.info("Loaded metadata from .about file")
-                
-                about_data["dependencies"] = get_dependencies()
-                return about_data
-        
-        logger.error("No .about file found - metadata unavailable")
-        return {
-            "error": ".about file not found - deployment metadata unavailable",
-            "app": {"name": "corto-exchange"},
-            "dependencies": get_dependencies()
-        }
-        
-    except Exception as e:
-        logger.error(f"Error getting version info: {e}")
-        return {
-            "error": "Version information unavailable",
-            "app": {"name": "corto-exchange"},
-            "build_and_release": {
-                "release_version": "unknown",
-                "build_date": "unknown"
-            },
-            "dependencies": {}
-        }
+  """Get deployment and build information from about.properties"""
+  try:
+    props_path = Path(__file__).parent.parent / "about.properties"
+    if props_path.exists():
+      # Parse simple key=value properties
+      props: dict[str, str] = {}
+      with open(props_path, "r") as f:
+        for line in f:
+          line = line.strip()
+          if not line or line.startswith("#"):
+            continue
+          if "=" in line:
+            k, v = line.split("=", 1)
+            props[k.strip()] = v.strip()
+
+      logger.info("Loaded metadata from about.properties file")
+
+      about_data = {
+        "app": {
+          "name": props.get("app.name", "corto-exchange"),
+          "service": props.get("app.service", "corto-exchange"),
+        },
+        "build_and_release": {
+          "release_version": props.get("build.release_version", props.get("version", "unknown")),
+          "build_date": props.get("build.date", props.get("date", "unknown")),
+          "build_timestamp": props.get("build.timestamp", props.get("timestamp", "unknown")),
+        },
+        "git": {
+          "commit": props.get("git.commit", "unknown"),
+          "commit_short": props.get("git.commit.short", "unknown"),
+          "branch": props.get("git.branch", "unknown"),
+        },
+        "build": {
+          "number": props.get("build.number", "unknown"),
+          "workflow": props.get("build.workflow", "unknown"),
+          "actor": props.get("build.actor", "unknown"),
+        },
+        "image": {
+          "name": props.get("image.name", "unknown"),
+          "tag": props.get("image.tag", "unknown"),
+        },
+      }
+
+      about_data["dependencies"] = get_dependencies()
+      return about_data
+
+    logger.error("No about.properties file found - metadata unavailable")
+    return {
+      "error": "about.properties file not found - deployment metadata unavailable",
+      "app": {"name": "corto-exchange"},
+      "dependencies": get_dependencies(),
+    }
+
+  except Exception as e:
+    logger.error(f"Error getting version info: {e}")
+    return {
+      "error": "Version information unavailable",
+      "app": {"name": "corto-exchange"},
+      "build_and_release": {
+        "release_version": "unknown",
+        "build_date": "unknown",
+      },
+      "dependencies": {},
+    }
 
 # Run the FastAPI server using uvicorn
 if __name__ == "__main__":
