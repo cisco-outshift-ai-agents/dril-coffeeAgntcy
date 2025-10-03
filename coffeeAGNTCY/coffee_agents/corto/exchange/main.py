@@ -1,9 +1,7 @@
 # Copyright AGNTCY Contributors (https://github.com/agntcy)
 # SPDX-License-Identifier: Apache-2.0
 
-import json
 import logging
-import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -71,14 +69,12 @@ async def handle_prompt(request: PromptRequest):
 async def health_check():
     return {"status": "ok"}
 
-@app.get("/version")
-@app.get("/api/version")
+@app.get("/build/info")
 async def version_info():
-  """Get deployment and build information from about.properties"""
+  """Return minimal build info sourced from about.properties."""
   try:
     props_path = Path(__file__).parent.parent / "about.properties"
     if props_path.exists():
-      # Parse simple key=value properties
       props: dict[str, str] = {}
       with open(props_path, "r") as f:
         for line in f:
@@ -89,53 +85,47 @@ async def version_info():
             k, v = line.split("=", 1)
             props[k.strip()] = v.strip()
 
-      logger.info("Loaded metadata from about.properties file")
+      app_name = props.get("app.name", "corto-exchange")
+      service = props.get("app.service", "corto-exchange")
+      version = props.get("build.release_version", props.get("version", "unknown"))
+      build_date = props.get("build.date", props.get("date", "unknown"))
+      build_ts = props.get("build.timestamp", props.get("timestamp", "unknown"))
+      image_name = props.get("image.name", "unknown")
+      image_tag = props.get("image.tag", "unknown")
+      image = (
+        f"{image_name}:{image_tag}" if image_name != "unknown" and image_tag != "unknown" else image_name
+      )
 
-      about_data = {
-        "app": {
-          "name": props.get("app.name", "corto-exchange"),
-          "service": props.get("app.service", "corto-exchange"),
-        },
-        "build_and_release": {
-          "release_version": props.get("build.release_version", props.get("version", "unknown")),
-          "build_date": props.get("build.date", props.get("date", "unknown")),
-          "build_timestamp": props.get("build.timestamp", props.get("timestamp", "unknown")),
-        },
-        "git": {
-          "commit": props.get("git.commit", "unknown"),
-          "commit_short": props.get("git.commit.short", "unknown"),
-          "branch": props.get("git.branch", "unknown"),
-        },
-        "build": {
-          "number": props.get("build.number", "unknown"),
-          "workflow": props.get("build.workflow", "unknown"),
-          "actor": props.get("build.actor", "unknown"),
-        },
-        "image": {
-          "name": props.get("image.name", "unknown"),
-          "tag": props.get("image.tag", "unknown"),
-        },
+      return {
+        "app": app_name,
+        "service": service,
+        "version": version,
+        "build_date": build_date,
+        "build_timestamp": build_ts,
+        "image": image,
+        "dependencies": get_dependencies(),
       }
-
-      about_data["dependencies"] = get_dependencies()
-      return about_data
 
     logger.error("No about.properties file found - metadata unavailable")
     return {
-      "error": "about.properties file not found - deployment metadata unavailable",
-      "app": {"name": "corto-exchange"},
+      "app": "corto-exchange",
+      "service": "corto-exchange",
+      "version": "unknown",
+      "build_date": "unknown",
+      "build_timestamp": "unknown",
+      "image": "unknown",
       "dependencies": get_dependencies(),
     }
 
   except Exception as e:
     logger.error(f"Error getting version info: {e}")
     return {
-      "error": "Version information unavailable",
-      "app": {"name": "corto-exchange"},
-      "build_and_release": {
-        "release_version": "unknown",
-        "build_date": "unknown",
-      },
+      "app": "corto-exchange",
+      "service": "corto-exchange",
+      "version": "unknown",
+      "build_date": "unknown",
+      "build_timestamp": "unknown",
+      "image": "unknown",
       "dependencies": {},
     }
 
