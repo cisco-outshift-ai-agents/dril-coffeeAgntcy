@@ -11,7 +11,7 @@ interface InfoModalProps {
   onClose: () => void
 }
 
-type BuildInfo = {
+interface BuildInfo {
   app: string
   service: string
   version: string

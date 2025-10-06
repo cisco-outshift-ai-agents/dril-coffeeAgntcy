@@ -6,6 +6,7 @@ on:
     tags: ["*"]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build-and-push:
@@ -43,7 +44,7 @@ jobs:
 
     permissions:
       packages: write
-      contents: write
+      contents: read
 
     steps:
       - name: Pre-cleanup Docker images

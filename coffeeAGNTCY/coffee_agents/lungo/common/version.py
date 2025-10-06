@@ -9,11 +9,11 @@ import logging
 import re
 from pathlib import Path
 import subprocess
-from typing import Optional, Tuple
+from typing import Optional
 
-try:
-    import tomllib  # Python 3.11+
-except Exception:  # pragma: no cover
+try:  
+    import tomllib  
+except Exception:  
     tomllib = None
 
 logger = logging.getLogger(__name__)
@@ -31,47 +31,42 @@ DISPLAY_NAMES = {
 
 def _extract_name_and_version(spec: str):
     """Extract base package name and version constraint from a dependency spec.
-
-    Handles extras (e.g., mcp[cli]>=1.10.0) and environment markers (e.g., ; python_version>='3.11').
-
     Returns tuple (base_name, op, version) where op is one of '==', '>=', or '' if unspecified.
     """
-   
-    s = spec.split(';', 1)[0].strip()
-    s = re.sub(r"\s*(==|>=)\s*", r" \1 ", s)
-    name_part = s.split('[', 1)[0]
-    m = re.search(r"\s(==|>=)\s([^\s]+)", s)
-    if m:
-        op, ver = m.group(1), m.group(2)
-        name = name_part.split(op)[0].strip()
-        return name.strip(), op, ver.strip()
-
-    return name_part.strip(), "", ""
+    base = spec.split(';', 1)[0].strip()
+    base = base.split('[', 1)[0].strip()
+    
+    match = re.search(r"(==|>=)\s*([^;\s]+)", base)
+    if match:
+        op, ver = match.group(1), match.group(2)
+        name = base.split(op)[0].strip()
+        return name, op, ver
+    
+    return base, "", ""
 
 
 def get_dependencies():
     """Get dependency versions from pyproject.toml and docker-compose.yaml"""
+    dependencies = {}
+    
     try:
-        dependencies: dict[str, str] = {}
-
         # Parse pyproject.toml for Python dependencies
         pyproject_path = Path(__file__).parent.parent / "pyproject.toml"
         if pyproject_path.exists() and tomllib is not None:
             with open(pyproject_path, 'rb') as f:
                 data = tomllib.load(f)
-
+            
             for dep in data.get('project', {}).get('dependencies', []):
                 name, op, ver = _extract_name_and_version(dep)
                 display = DISPLAY_NAMES.get(name)
-                if not display:
-                    continue
-                if op == '==':
-                    dependencies[display] = f"v{ver}"
-                elif op == '>=':
-                    dependencies[display] = f">= v{ver}"
-                else:
-                    dependencies[display] = "unknown"
-
+                if display:
+                    if op == '==':
+                        dependencies[display] = f"v{ver}"
+                    elif op == '>=':
+                        dependencies[display] = f">= v{ver}"
+                    else:
+                        dependencies[display] = "unknown"
+        
         # Get SLIM version from docker-compose.yaml
         compose_path = Path(__file__).parent.parent / "docker-compose.yaml"
         if compose_path.exists():
@@ -80,40 +75,44 @@ def get_dependencies():
                 match = re.search(r'ghcr\.io/agntcy/slim:(\d+\.\d+\.\d+)', content)
                 if match:
                     dependencies['SLIM'] = f"v{match.group(1)}"
-
-        return dependencies
-
-    except Exception as e:  
+        
+    except Exception as e:
         logger.error(f"Error parsing dependencies: {e}")
-        return {}
+    
+    return dependencies
 
 
 def _find_git_root(start: Path) -> Optional[Path]:
-    """Ascend from 'start' to find a directory that contains a .git folder.
-
-    Returns the git root path if found, else None.
-    """
+    """Find git root by ascending from start directory."""
     try:
         p = start.resolve()
         for ancestor in [p, *p.parents]:
             if (ancestor / ".git").exists():
                 return ancestor
-    except Exception:  
+    except Exception:
         return None
     return None
 
 
 def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
-    """Return newest tag and its dates from local git.
-    """
+    """Return newest tag and its dates from local git, or None if unavailable."""
     try:
         start = start or Path(__file__).parent
         git_root = _find_git_root(start)
         if not git_root:
             return None
 
+        expected_root = Path(__file__).parent.parent.parent.resolve()
+        try:
+            git_root.resolve().relative_to(expected_root)
+        except ValueError:
+            logger.warning(f"Git root {git_root} is outside expected path {expected_root}")
+            return None
+
         def _run(args: list[str]) -> str:
-            return subprocess.check_output(args, cwd=git_root, text=True, stderr=subprocess.DEVNULL).strip()
+            return subprocess.check_output(
+                args, cwd=git_root, text=True, stderr=subprocess.DEVNULL
+            ).strip()
 
         out = _run([
             "git", "for-each-ref",
@@ -121,15 +120,19 @@ def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
             "--format=%(refname:short)\t%(creatordate:iso8601)\t%(creatordate:unix)",
             "refs/tags",
         ])
-        line = out.splitlines()[0] if out else ""
-        if not line:
+        
+        if not out:
             return None
+            
+        line = out.splitlines()[0]
         parts = line.split("\t")
         if len(parts) < 3:
             return None
+            
         return {"tag": parts[0], "created_iso": parts[1], "created_unix": parts[2]}
-    except Exception as e:  
-        logger.debug(f"git fallback failed: {e}")
+        
+    except Exception as e:
+        logger.debug(f"Git fallback failed: {e}")
         return None
 
 
@@ -145,6 +148,13 @@ def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange
         Dictionary containing app, service, version, build_date, build_timestamp, image, and dependencies
     """
     try:
+        expected_root = Path(__file__).parent.parent.resolve()
+        try:
+            properties_file_path.resolve().relative_to(expected_root)
+        except ValueError:
+            logger.warning(f"Properties file {properties_file_path} is outside expected path {expected_root}")
+            properties_file_path = expected_root / "about.properties"
+
         # Try to read from about.properties first
         if properties_file_path.exists():
             config = configparser.ConfigParser()
@@ -200,7 +210,7 @@ def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange
                 "dependencies": get_dependencies(),
             }
 
-        # Final fallback - no properties file and no git info
+        # No properties file and no git info
         return {
             "app": app_name,
             "service": service_name,
