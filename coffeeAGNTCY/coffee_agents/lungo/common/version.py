@@ -34,15 +34,16 @@ def _extract_name_and_version(spec: str):
     Returns tuple (base_name, op, version) where op is one of '==', '>=', or '' if unspecified.
     """
     base = spec.split(';', 1)[0].strip()
-    base = base.split('[', 1)[0].strip()
     
     match = re.search(r"(==|>=)\s*([^;\s]+)", base)
     if match:
         op, ver = match.group(1), match.group(2)
-        name = base.split(op)[0].strip()
+        name_part = base.split(op)[0].strip()
+        name = name_part.split('[', 1)[0].strip()
         return name, op, ver
     
-    return base, "", ""
+    name = base.split('[', 1)[0].strip()
+    return name, "", ""
 
 
 def get_dependencies():
@@ -136,13 +137,32 @@ def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
         return None
 
 
+def _format_build_date(build_date: str) -> str:
+    """Format build date to just show the date part (YYYY-MM-DD)."""
+    if build_date == "unknown":
+        return build_date
+
+    if ' ' in build_date:
+        date_part = build_date.split(' ')[0]
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', date_part):
+            return date_part
+    
+    if 'T' in build_date:
+        date_part = build_date.split('T')[0]
+        if re.match(r'^\d{4}-\d{2}-\d{2}$', date_part):
+            return date_part
+    
+    if re.match(r'^\d{4}-\d{2}-\d{2}$', build_date):
+        return build_date
+    
+    return build_date
+
+
 def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange", service_name: str = "lungo-exchange") -> dict:
     """Get complete version information for the application.
     
     Args:
         properties_file_path: Path to the about.properties file
-        app_name: Default app name to use as fallback
-        service_name: Default service name to use as fallback
         
     Returns:
         Dictionary containing app, service, version, build_date, build_timestamp, image, and dependencies
@@ -190,7 +210,7 @@ def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange
                 "app": app_name_final,
                 "service": service_final,
                 "version": version,
-                "build_date": build_date,
+                "build_date": _format_build_date(build_date),
                 "build_timestamp": build_ts,
                 "image": image,
                 "dependencies": get_dependencies(),
@@ -204,7 +224,7 @@ def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange
                 "app": app_name,
                 "service": service_name,
                 "version": git_info.get("tag", "unknown"),
-                "build_date": git_info.get("created_iso", "unknown"),
+                "build_date": _format_build_date(git_info.get("created_iso", "unknown")),
                 "build_timestamp": git_info.get("created_unix", "unknown"),
                 "image": "unknown",
                 "dependencies": get_dependencies(),
