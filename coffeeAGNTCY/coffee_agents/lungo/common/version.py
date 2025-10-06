@@ -1,19 +1,19 @@
-"""Version and dependency utilities for Corto exchange service.
+"""Version and dependency utilities for Lungo exchange service.
 
-Includes a local git-based fallback helper to derive version/date
-when about.properties is unavailable for local environments.
+Includes helpers to extract dependency versions and to derive a local
+git-based fallback for build version and date when running outside CI.
 """
 
 import logging
 import re
 from pathlib import Path
 import subprocess
-from typing import Optional
+from typing import Optional, Tuple
 
-try:  
-    import tomllib  
-except Exception:  
-    tomllib = None 
+try:
+    import tomllib  # Python 3.11+
+except Exception:  # pragma: no cover
+    tomllib = None
 
 logger = logging.getLogger(__name__)
 
@@ -23,22 +23,29 @@ DISPLAY_NAMES = {
     "a2a-sdk": "A2A",
     "ioa-observe-sdk": "Observe SDK",
     "langgraph": "LangGraph",
+    "identity-service-sdk": "Identity",
+    "mcp": "MCP",
 }
 
 
 def _extract_name_and_version(spec: str):
     """Extract base package name and version constraint from a dependency spec.
 
+    Handles extras (e.g., mcp[cli]>=1.10.0) and environment markers (e.g., ; python_version>='3.11').
+
     Returns tuple (base_name, op, version) where op is one of '==', '>=', or '' if unspecified.
     """
-    base = spec.split("[")[0].strip()  
-    m = re.search(r"(==|>=)\s*([^;\s]+)", base)
+   
+    s = spec.split(';', 1)[0].strip()
+    s = re.sub(r"\s*(==|>=)\s*", r" \1 ", s)
+    name_part = s.split('[', 1)[0]
+    m = re.search(r"\s(==|>=)\s([^\s]+)", s)
     if m:
         op, ver = m.group(1), m.group(2)
-        name = base.split(op)[0].strip()
-        return name, op, ver
+        name = name_part.split(op)[0].strip()
+        return name.strip(), op, ver.strip()
 
-    return base, "", ""
+    return name_part.strip(), "", ""
 
 
 def get_dependencies():
@@ -51,7 +58,7 @@ def get_dependencies():
         if pyproject_path.exists() and tomllib is not None:
             with open(pyproject_path, 'rb') as f:
                 data = tomllib.load(f)
-            
+
             for dep in data.get('project', {}).get('dependencies', []):
                 name, op, ver = _extract_name_and_version(dep)
                 display = DISPLAY_NAMES.get(name)
@@ -63,8 +70,8 @@ def get_dependencies():
                     dependencies[display] = f">= v{ver}"
                 else:
                     dependencies[display] = "unknown"
-        
-        # Get SLIM version from docker-compose.yaml
+
+        # Get SLIM version from docker-compose.yaml (if used in labels)
         compose_path = Path(__file__).parent.parent / "docker-compose.yaml"
         if compose_path.exists():
             with open(compose_path, 'r') as f:
@@ -72,29 +79,31 @@ def get_dependencies():
                 match = re.search(r'ghcr\.io/agntcy/slim:(\d+\.\d+\.\d+)', content)
                 if match:
                     dependencies['SLIM'] = f"v{match.group(1)}"
-        
+
         return dependencies
-        
-    except Exception as e:
+
+    except Exception as e:  
         logger.error(f"Error parsing dependencies: {e}")
         return {}
 
 
 def _find_git_root(start: Path) -> Optional[Path]:
+    """Ascend from 'start' to find a directory that contains a .git folder.
+
+    Returns the git root path if found, else None.
+    """
     try:
         p = start.resolve()
         for ancestor in [p, *p.parents]:
             if (ancestor / ".git").exists():
                 return ancestor
-    except Exception:
+    except Exception:  # pragma: no cover
         return None
     return None
 
 
 def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
-    """Return newest tag and its dates from local git, or None.
-
-    Assumes tags exist. Kept minimal by avoiding additional fallbacks.
+    """Return newest tag and its dates from local git.
     """
     try:
         start = start or Path(__file__).parent
@@ -118,5 +127,6 @@ def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
         if len(parts) < 3:
             return None
         return {"tag": parts[0], "created_iso": parts[1], "created_unix": parts[2]}
-    except Exception:
+    except Exception as e:  
+        logger.debug(f"git fallback failed: {e}")
         return None

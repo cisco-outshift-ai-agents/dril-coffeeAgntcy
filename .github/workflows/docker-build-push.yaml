@@ -170,27 +170,3 @@ jobs:
             build.actor=${{ github.actor }}
             git.branch=${{ github.ref_name }}
             git.commit.short=${{ steps.metadata.outputs.short_sha }}
-
-      - name: Create about.properties (tag)
-        if: startsWith(github.ref, 'refs/tags/') && (matrix.image.name == 'corto-exchange' || matrix.image.name == 'lungo-exchange')
-        run: |
-          echo "app.name=${{ matrix.image.name }}" > about-${{ matrix.image.name }}.properties
-          echo "app.service=${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
-          echo "version=${{ steps.get_tag.outputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
-          echo "date=${{ steps.metadata.outputs.date_formatted }}" >> about-${{ matrix.image.name }}.properties
-          echo "timestamp=${{ steps.metadata.outputs.date }}" >> about-${{ matrix.image.name }}.properties
-          echo "git.commit=${{ github.sha }}" >> about-${{ matrix.image.name }}.properties
-          echo "git.commit.short=${{ steps.metadata.outputs.short_sha }}" >> about-${{ matrix.image.name }}.properties
-          echo "git.branch=${{ github.ref_name }}" >> about-${{ matrix.image.name }}.properties
-          echo "build.number=${{ github.run_number }}" >> about-${{ matrix.image.name }}.properties
-          echo "build.workflow=${{ github.workflow }}" >> about-${{ matrix.image.name }}.properties
-          echo "build.actor=${{ github.actor }}" >> about-${{ matrix.image.name }}.properties
-          echo "image.name=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}" >> about-${{ matrix.image.name }}.properties
-          echo "image.tag=${{ steps.get_tag.outputs.tag_name }}" >> about-${{ matrix.image.name }}.properties
-
-      - name: Upload about.properties to Release
-        if: startsWith(github.ref, 'refs/tags/') && (matrix.image.name == 'corto-exchange' || matrix.image.name == 'lungo-exchange')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            about-${{ matrix.image.name }}.properties

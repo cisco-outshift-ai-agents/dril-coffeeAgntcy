@@ -12,7 +12,7 @@ import uvicorn
 
 from agntcy_app_sdk.factory import AgntcyFactory
 from ioa_observe.sdk.tracing import session_start
-from common.version import get_dependencies
+from common.version import get_dependencies, get_latest_tag_and_date
 
 from config.logging_config import setup_logging
 from exchange.graph import shared
@@ -98,6 +98,17 @@ async def version_info():
         f"{image_name}:{image_tag}" if image_name != "unknown" and image_tag != "unknown" else image_name
       )
 
+      # Fallback to local git metadata if unknown for local builds
+      if version == "unknown" or build_date == "unknown" or build_ts == "unknown":
+        git_info = get_latest_tag_and_date(Path(__file__).resolve())
+        if git_info:
+          if version == "unknown":
+            version = git_info.get("tag", version)
+          if build_date == "unknown":
+            build_date = git_info.get("created_iso", build_date)
+          if build_ts == "unknown":
+            build_ts = git_info.get("created_unix", build_ts)
+
       return {
         "app": app_name,
         "service": service,
@@ -109,6 +120,18 @@ async def version_info():
       }
 
     logger.error("No about.properties file found - metadata unavailable")
+    git_info = get_latest_tag_and_date(Path(__file__).resolve())
+    if git_info:
+      return {
+        "app": "corto-exchange",
+        "service": "corto-exchange",
+        "version": git_info.get("tag", "unknown"),
+        "build_date": git_info.get("created_iso", "unknown"),
+        "build_timestamp": git_info.get("created_unix", "unknown"),
+        "image": "unknown",
+        "dependencies": get_dependencies(),
+      }
+
     return {
       "app": "corto-exchange",
       "service": "corto-exchange",

@@ -30,10 +30,6 @@ RUN uv sync --locked --no-editable
 
 COPY coffeeAGNTCY/coffee_agents/corto/ .
 
-# Add entrypoint for optional release metadata fetch
-COPY coffeeAGNTCY/coffee_agents/corto/docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
 ## Generate about.properties file with build metadata
 RUN printf "app.name=corto-exchange\n"                > about.properties && \
     printf "app.service=corto-exchange\n"            >> about.properties && \
@@ -49,5 +45,4 @@ RUN printf "app.name=corto-exchange\n"                > about.properties && \
     printf "image.name=%s\n"         "ghcr.io/agntcy/coffee-agntcy/corto-exchange" >> about.properties && \
     printf "image.tag=%s\n"          "$BUILD_VERSION"    >> about.properties
 
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["uv", "run", "python", "exchange/main.py"]
