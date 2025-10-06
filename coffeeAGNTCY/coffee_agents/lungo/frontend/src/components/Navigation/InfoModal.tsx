@@ -11,33 +11,47 @@ interface InfoModalProps {
   onClose: () => void
 }
 
+type BuildInfo = {
+  app: string
+  service: string
+  version: string
+  build_date: string
+  build_timestamp: string
+  image: string
+  dependencies: Record<string, string>
+}
+
 const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
   const DEFAULT_EXCHANGE_APP_API_URL = "http://127.0.0.1:8000"
   const EXCHANGE_APP_API_URL =
     import.meta.env.VITE_EXCHANGE_APP_API_URL || DEFAULT_EXCHANGE_APP_API_URL
 
-  const [info, setInfo] = React.useState<{
-    app: string
-    service: string
-    version: string
-    build_date: string
-    build_timestamp: string
-    image: string
-    dependencies: Record<string, string>
-  } | null>(null)
+  const [info, setInfo] = React.useState<BuildInfo | null>(null)
+  const [error, setError] = React.useState<string | null>(null)
 
   React.useEffect(() => {
     if (!isOpen) return
-    ;(async () => {
+    let cancelled = false
+    const fetchInfo = async () => {
       try {
-        const res = await fetch(`${EXCHANGE_APP_API_URL}/build/info`)
+        setError(null)
+        const res = await fetch(`${EXCHANGE_APP_API_URL}/about`)
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+        }
         const data = await res.json()
-        setInfo(data)
+        if (!cancelled) setInfo(data)
       } catch (e) {
-        console.error("Failed to fetch build info:", e)
-        setInfo(null)
+        if (!cancelled) {
+          setError("Failed to load build info")
+          setInfo(null)
+        }
       }
-    })()
+    }
+    fetchInfo()
+    return () => {
+      cancelled = true
+    }
   }, [isOpen, EXCHANGE_APP_API_URL])
 
   if (!isOpen) return null
@@ -60,17 +74,16 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
               Build and Release Information
             </h3>
             <div className="space-y-2 text-sm text-modal-text-secondary">
+              {error && <div className="text-red-500">{error}</div>}
               <div className="flex justify-between">
                 <span>Release Version:</span>
                 <span className="font-mono text-modal-accent">
-                  {info?.version ?? "unknown"}
+                  {info?.version ?? "…"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span>Build Date:</span>
-                <span className="font-mono">
-                  {info?.build_date ?? "unknown"}
-                </span>
+                <span className="font-mono">{info?.build_date ?? "…"}</span>
               </div>
             </div>
           </div>
@@ -87,7 +100,10 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
                     <span className="font-mono text-modal-accent">{ver}</span>
                   </div>
                 ))}
-              {!info?.dependencies && (
+              {!info?.dependencies && !error && (
+                <div className="text-modal-text-secondary">Loading…</div>
+              )}
+              {!info?.dependencies && error && (
                 <div className="text-modal-text-secondary">
                   No dependency info
                 </div>

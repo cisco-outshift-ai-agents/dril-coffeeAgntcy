@@ -4,7 +4,6 @@
  **/
 
 import React, { useEffect, useState } from "react"
-import axios from "axios"
 import { X } from "lucide-react"
 
 interface InfoModalProps {
@@ -24,8 +23,7 @@ type BuildInfo = {
 
 const DEFAULT_EXCHANGE_APP_API_URL = "http://127.0.0.1:8000"
 const EXCHANGE_APP_API_URL =
-  (import.meta as any).env["VITE_EXCHANGE_APP_API_URL"] ||
-  DEFAULT_EXCHANGE_APP_API_URL
+  import.meta.env.VITE_EXCHANGE_APP_API_URL || DEFAULT_EXCHANGE_APP_API_URL
 
 const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
   const [info, setInfo] = useState<BuildInfo | null>(null)
@@ -37,10 +35,12 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
     const fetchInfo = async () => {
       try {
         setError(null)
-        const res = await axios.get<BuildInfo>(
-          `${EXCHANGE_APP_API_URL}/build/info`,
-        )
-        if (!cancelled) setInfo(res.data)
+        const res = await fetch(`${EXCHANGE_APP_API_URL}/about`)
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`)
+        }
+        const data = await res.json()
+        if (!cancelled) setInfo(data)
       } catch (e) {
         if (!cancelled) setError("Failed to load build info")
       }
@@ -49,7 +49,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
     return () => {
       cancelled = true
     }
-  }, [isOpen])
+  }, [isOpen, EXCHANGE_APP_API_URL])
 
   if (!isOpen) return null
 
@@ -71,9 +71,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
               Build and Release Information
             </h3>
             <div className="space-y-2 text-sm text-modal-text-secondary">
-              {error && (
-                <div className="text-red-500">{error}</div>
-              )}
+              {error && <div className="text-red-500">{error}</div>}
               <div className="flex justify-between">
                 <span>Release Version:</span>
                 <span className="font-mono text-modal-accent">
@@ -82,9 +80,7 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div className="flex justify-between">
                 <span>Build Date:</span>
-                <span className="font-mono">
-                  {info?.build_date ?? "…"}
-                </span>
+                <span className="font-mono">{info?.build_date ?? "…"}</span>
               </div>
             </div>
 
@@ -93,18 +89,16 @@ const InfoModal: React.FC<InfoModalProps> = ({ isOpen, onClose }) => {
                 Dependencies:
               </h3>
               <div className="space-y-2 text-sm text-modal-text-secondary">
-                {info
-                  ? Object.entries(info.dependencies).map(([k, v]) => (
-                      <div className="flex justify-between" key={k}>
-                        <span>{k}:</span>
-                        <span className="font-mono text-modal-accent">
-                          {v}
-                        </span>
-                      </div>
-                    ))
-                  : (
-                      <div className="text-modal-text-secondary">Loading…</div>
-                    )}
+                {info ? (
+                  Object.entries(info.dependencies).map(([k, v]) => (
+                    <div className="flex justify-between" key={k}>
+                      <span>{k}:</span>
+                      <span className="font-mono text-modal-accent">{v}</span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-modal-text-secondary">Loading…</div>
+                )}
               </div>
             </div>
           </div>

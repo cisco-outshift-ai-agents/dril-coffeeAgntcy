@@ -64,7 +64,7 @@ jobs:
         id: metadata
         run: |
           echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-          echo "date_formatted=$(date -u +'%B %d, %Y')" >> $GITHUB_OUTPUT
+          echo "date_formatted=$(date -u +'%Y-%m-%d')" >> $GITHUB_OUTPUT
           echo "short_sha=${GITHUB_SHA:0:7}" >> $GITHUB_OUTPUT
 
       - name: Log Event Type
@@ -100,6 +100,9 @@ jobs:
             BUILD_NUMBER=${{ github.run_number }}
             BUILD_WORKFLOW=${{ github.workflow }}
             BUILD_ACTOR=${{ github.actor }}
+            BUILD_SOURCE=ci
+            IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}
+            IMAGE_TAG=pr-${{ github.event.pull_request.number }}
           labels: |
             org.opencontainers.image.version=pr-${{ github.event.pull_request.number }}
             org.opencontainers.image.created=${{ steps.metadata.outputs.date }}
@@ -130,6 +133,9 @@ jobs:
             BUILD_NUMBER=${{ github.run_number }}
             BUILD_WORKFLOW=${{ github.workflow }}
             BUILD_ACTOR=${{ github.actor }}
+            BUILD_SOURCE=ci
+            IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}
+            IMAGE_TAG=latest
           labels: |
             org.opencontainers.image.version=latest
             org.opencontainers.image.created=${{ steps.metadata.outputs.date }}
@@ -160,6 +166,9 @@ jobs:
             BUILD_NUMBER=${{ github.run_number }}
             BUILD_WORKFLOW=${{ github.workflow }}
             BUILD_ACTOR=${{ github.actor }}
+            BUILD_SOURCE=ci
+            IMAGE_NAME=ghcr.io/${{ github.repository_owner }}/coffee-agntcy/${{ matrix.image.name }}
+            IMAGE_TAG=${{ steps.get_tag.outputs.tag_name }}
           labels: |
             org.opencontainers.image.version=${{ steps.get_tag.outputs.tag_name }}
             org.opencontainers.image.created=${{ steps.metadata.outputs.date }}

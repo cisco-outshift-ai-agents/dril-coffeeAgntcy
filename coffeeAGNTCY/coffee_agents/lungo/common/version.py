@@ -4,6 +4,7 @@ Includes helpers to extract dependency versions and to derive a local
 git-based fallback for build version and date when running outside CI.
 """
 
+import configparser
 import logging
 import re
 from pathlib import Path
@@ -71,7 +72,7 @@ def get_dependencies():
                 else:
                     dependencies[display] = "unknown"
 
-        # Get SLIM version from docker-compose.yaml (if used in labels)
+        # Get SLIM version from docker-compose.yaml
         compose_path = Path(__file__).parent.parent / "docker-compose.yaml"
         if compose_path.exists():
             with open(compose_path, 'r') as f:
@@ -97,7 +98,7 @@ def _find_git_root(start: Path) -> Optional[Path]:
         for ancestor in [p, *p.parents]:
             if (ancestor / ".git").exists():
                 return ancestor
-    except Exception:  # pragma: no cover
+    except Exception:  
         return None
     return None
 
@@ -130,3 +131,94 @@ def get_latest_tag_and_date(start: Optional[Path] = None) -> Optional[dict]:
     except Exception as e:  
         logger.debug(f"git fallback failed: {e}")
         return None
+
+
+def get_version_info(properties_file_path: Path, app_name: str = "lungo-exchange", service_name: str = "lungo-exchange") -> dict:
+    """Get complete version information for the application.
+    
+    Args:
+        properties_file_path: Path to the about.properties file
+        app_name: Default app name to use as fallback
+        service_name: Default service name to use as fallback
+        
+    Returns:
+        Dictionary containing app, service, version, build_date, build_timestamp, image, and dependencies
+    """
+    try:
+        # Try to read from about.properties first
+        if properties_file_path.exists():
+            config = configparser.ConfigParser()
+            with open(properties_file_path, "r") as f:
+                config_string = "[DEFAULT]\n" + f.read()
+            config.read_string(config_string)
+            
+            props = dict(config["DEFAULT"])
+
+            app_name_final = props.get("app.name", app_name)
+            service_final = props.get("app.service", service_name)
+            version = props.get("build.version", props.get("version", "unknown"))
+            build_date = props.get("build.date", props.get("date", "unknown"))
+            build_ts = props.get("build.timestamp", props.get("timestamp", "unknown"))
+            image_name = props.get("image.name", "unknown")
+            image_tag = props.get("image.tag", "unknown")
+            image = (
+                f"{image_name}:{image_tag}" if image_name != "unknown" and image_tag != "unknown" else image_name
+            )
+
+            # Fill in any missing values with git fallback
+            if version == "unknown" or build_date == "unknown" or build_ts == "unknown":
+                git_info = get_latest_tag_and_date(properties_file_path)
+                if git_info:
+                    if version == "unknown":
+                        version = git_info.get("tag", version)
+                    if build_date == "unknown":
+                        build_date = git_info.get("created_iso", build_date)
+                    if build_ts == "unknown":
+                        build_ts = git_info.get("created_unix", build_ts)
+
+            return {
+                "app": app_name_final,
+                "service": service_final,
+                "version": version,
+                "build_date": build_date,
+                "build_timestamp": build_ts,
+                "image": image,
+                "dependencies": get_dependencies(),
+            }
+
+        # No about.properties file found - use git fallback
+        logger.error("No about.properties file found - metadata unavailable")
+        git_info = get_latest_tag_and_date(properties_file_path)
+        if git_info:
+            return {
+                "app": app_name,
+                "service": service_name,
+                "version": git_info.get("tag", "unknown"),
+                "build_date": git_info.get("created_iso", "unknown"),
+                "build_timestamp": git_info.get("created_unix", "unknown"),
+                "image": "unknown",
+                "dependencies": get_dependencies(),
+            }
+
+        # Final fallback - no properties file and no git info
+        return {
+            "app": app_name,
+            "service": service_name,
+            "version": "unknown",
+            "build_date": "unknown",
+            "build_timestamp": "unknown",
+            "image": "unknown",
+            "dependencies": get_dependencies(),
+        }
+
+    except Exception as e:
+        logger.error(f"Error getting version info: {e}")
+        return {
+            "app": app_name,
+            "service": service_name,
+            "version": "unknown",
+            "build_date": "unknown",
+            "build_timestamp": "unknown",
+            "image": "unknown",
+            "dependencies": {},
+        }
