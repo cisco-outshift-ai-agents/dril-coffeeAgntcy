@@ -112,6 +112,9 @@ services:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OPENAI_ENDPOINT=${OPENAI_ENDPOINT:-}
       - OPENAI_MODEL_NAME=${OPENAI_MODEL_NAME:-}
+      - CIRCUIT_CLIENT_ID=${CIRCUIT_CLIENT_ID:-}
+      - CIRCUIT_CLIENT_SECRET=${CIRCUIT_CLIENT_SECRET:-}
+      - CIRCUIT_APP_KEY=${CIRCUIT_APP_KEY:-}
       - LLM_PROVIDER=${LLM_PROVIDER}
       - DEFAULT_MESSAGE_TRANSPORT=${DEFAULT_MESSAGE_TRANSPORT:-NATS}
       - TRANSPORT_SERVER_ENDPOINT=${TRANSPORT_SERVER_ENDPOINT:-nats://nats:4222}
@@ -127,7 +130,7 @@ services:
     image: ghcr.io/agntcy/coffee-agntcy/lungo-ui:latest
     container_name: ui-lungo
     environment:
-      - VITE_EXCHANGE_APP_API_URL=http://127.0.0.1:8000
+      - VITE_EXCHANGE_APP_API_URL=http://coffeeagentcy-supervisor-customer-1.apps.aipod2.dlr.local
       - VITE_LOGISTICS_APP_API_URL=http://127.0.0.1:9090
     depends_on:
       - exchange-server
