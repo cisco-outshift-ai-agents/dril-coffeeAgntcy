@@ -43,6 +43,11 @@ class AzureChatOpenAIWrapper(BaseChatModel):
         self._refresh_token()
         self._create_llm_instance()
 
+    def get_llm(self) -> AzureChatOpenAI:
+        """Return the underlying AzureChatOpenAI instance."""
+        self._ensure_valid_llm()
+        return self._llm
+
     @property
     def _llm_type(self) -> str:
         return "azure_chat_openai_with_oauth"

@@ -46,6 +46,9 @@ def get_circuit_llm():
     deployment_name=model,
     api_version=version,
   )
+
+  llm = llm.get_llm()
+
   logger.info(f"Using Circuit LLM model: {model} at endpoint: {endpoint}")
   return llm
 
